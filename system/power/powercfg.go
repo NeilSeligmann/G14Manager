@@ -71,6 +71,8 @@ func (p *Cfg) setPowerPlan(active plan) error {
 
 // Set will change the Windows Power Option to the given power plan name
 func (p *Cfg) Set(planName string) (nextPlan string, err error) {
+	log.Print(p.plansMap)
+
 	propose, ok := p.plansMap[strings.ToLower(planName)]
 	if !ok {
 		err = errors.New("cannot find target power plan")

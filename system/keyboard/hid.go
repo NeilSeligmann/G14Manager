@@ -16,8 +16,8 @@ const (
 
 var (
 	hidDevices = []string{
-		"mi_02&col01", // Special key combo
-		"mi_02&col02", // Volume up/down?
+		"mi_00&col01", // Special key combo
+		"mi_00&col02", // Volume up/down?
 	}
 )
 

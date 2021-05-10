@@ -2,8 +2,9 @@ package keyboard
 
 // Defines the vendorID/productID for NKEY keyboard
 const (
-	VendorID  = 0x0b05
-	ProductID = 0x1866
+	VendorID = 0x0b05
+	// ProductID = 0x1866
+	ProductID = 0x19b6
 )
 
 // Define key codes

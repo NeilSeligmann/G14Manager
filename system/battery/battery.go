@@ -24,7 +24,7 @@ type ChargeLimit struct {
 func NewChargeLimit(wmi atkacpi.WMI) (*ChargeLimit, error) {
 	return &ChargeLimit{
 		wmi:          wmi,
-		currentLimit: 80,
+		currentLimit: 60,
 	}, nil
 }
 

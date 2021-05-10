@@ -53,6 +53,7 @@ func main() {
 
 	dep, err := controller.GetDependencies(controllerConfig)
 	if err != nil {
+		log.Print(err)
 		log.Fatalf("[supervisor] cannot get dependencies\n")
 	}
 

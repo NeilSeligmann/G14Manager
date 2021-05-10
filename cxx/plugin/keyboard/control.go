@@ -55,7 +55,7 @@ const (
 )
 
 const (
-	kbControlDevice = "mi_02&col01"
+	kbControlDevice = "mi_00&col01"
 )
 
 // TODO: reverse engineer this as well
@@ -128,6 +128,7 @@ func NewControl(config Config) (*Control, error) {
 	}
 	var path string
 	for _, device := range devices {
+		log.Printf(device.Path)
 		if strings.Contains(device.Path, kbControlDevice) {
 			path = device.Path
 		}

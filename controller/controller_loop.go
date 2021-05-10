@@ -67,6 +67,11 @@ func (c *Controller) handlePowerEvent(haltCtx context.Context) {
 
 func (c *Controller) handleKeyPress(haltCtx context.Context) {
 	for {
+		// print("Key press: ")
+		// println(<-c.keyCodeCh)
+
+		// keyCode := <-c.keyCodeCh
+
 		select {
 		case keyCode := <-c.keyCodeCh:
 			switch keyCode {
