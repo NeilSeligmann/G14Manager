@@ -13,6 +13,7 @@ import (
 	"github.com/zllovesuki/G14Manager/supervisor"
 	"github.com/zllovesuki/G14Manager/supervisor/background"
 	"github.com/zllovesuki/G14Manager/util"
+	"github.com/zllovesuki/G14Manager/web"
 
 	suture "github.com/thejerf/suture/v4"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -37,14 +38,14 @@ func main() {
 		})
 	}
 
-	log.Printf("G14Manager version: %s\n", Version)
+	log.Printf("G15Manager version: %s\n", Version)
 
 	notifier := background.NewNotifier()
 
-	versionChecker, err := background.NewVersionCheck(Version, "zllovesuki/G14Manager", notifier.C)
-	if err != nil {
-		log.Fatalf("[supervisor] cannot get version checker")
-	}
+	// versionChecker, err := background.NewVersionCheck(Version, "zllovesuki/G14Manager", notifier.C)
+	// if err != nil {
+	// 	log.Fatalf("[supervisor] cannot get version checker")
+	// }
 
 	controllerConfig := controller.RunConfig{
 		DryRun:     os.Getenv("DRY_RUN") != "",
@@ -66,6 +67,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("[supervisor] cannot create gRPCServer: %+v\n", err)
 	}
+
+	// Web Server
+	web.NewHttpServer(dep)
+	// if err != nil {
+	// 	log.Fatalf("[supervisor] failed to create HTTP web server: %+v\n", err)
+	// }
+
+	log.Print("TEST")
 
 	managerResponder := &supervisor.ManagerResponder{
 		Dependencies:     dep,
@@ -114,7 +123,7 @@ func main() {
 	*/
 
 	backgroundSupervisor := suture.New("backgroundSupervisor", suture.Spec{})
-	backgroundSupervisor.Add(versionChecker)
+	// backgroundSupervisor.Add(versionChecker)
 	backgroundSupervisor.Add(notifier)
 
 	grpcSupervisor := suture.New("gRPCSupervisor", suture.Spec{})

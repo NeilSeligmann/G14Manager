@@ -44,6 +44,7 @@ func NewGRPCServer(conf GRPCRunConfig) (*Server, error) {
 	if conf.ManagerReqCh == nil {
 		return nil, fmt.Errorf("nil manager request channel is invalid")
 	}
+
 	if conf.Dependencies == nil {
 		return nil, fmt.Errorf("nil dependencies is invalid")
 	}
