@@ -7,7 +7,8 @@ import (
 	"github.com/zllovesuki/G14Manager/cxx/plugin/keyboard"
 	"github.com/zllovesuki/G14Manager/cxx/plugin/rr"
 	"github.com/zllovesuki/G14Manager/cxx/plugin/volume"
-	"github.com/zllovesuki/G14Manager/rpc/announcement"
+
+	// "github.com/zllovesuki/G14Manager/rpc/announcement"
 	"github.com/zllovesuki/G14Manager/system/atkacpi"
 	"github.com/zllovesuki/G14Manager/system/battery"
 	"github.com/zllovesuki/G14Manager/system/persist"
@@ -34,7 +35,7 @@ type Dependencies struct {
 	GPU            *gpu.Control
 	RR             *rr.Control
 	ConfigRegistry persist.ConfigRegistry
-	Updatable      []announcement.Updatable
+	// Updatable      []announcement.Updatable
 }
 
 func GetDependencies(conf RunConfig) (*Dependencies, error) {
@@ -100,10 +101,10 @@ func GetDependencies(conf RunConfig) (*Dependencies, error) {
 	config.Register(battery)
 	config.Register(kbCtrl)
 
-	updatable := []announcement.Updatable{
-		thermal,
-		kbCtrl,
-	}
+	// updatable := []announcement.Updatable{
+	// 	thermal,
+	// 	kbCtrl,
+	// }
 
 	return &Dependencies{
 		WMI:            wmi,
@@ -114,7 +115,7 @@ func GetDependencies(conf RunConfig) (*Dependencies, error) {
 		GPU:            gpuCtrl,
 		RR:             rrCtrl,
 		ConfigRegistry: config,
-		Updatable:      updatable,
+		// Updatable:      updatable,
 	}, nil
 }
 

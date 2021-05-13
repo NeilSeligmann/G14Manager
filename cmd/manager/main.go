@@ -8,14 +8,14 @@ import (
 	"syscall"
 	"time"
 
+	suture "github.com/thejerf/suture/v4"
 	"github.com/zllovesuki/G14Manager/controller"
-	"github.com/zllovesuki/G14Manager/rpc/server"
-	"github.com/zllovesuki/G14Manager/supervisor"
+
+	// "github.com/zllovesuki/G14Manager/rpc/server"
+
 	"github.com/zllovesuki/G14Manager/supervisor/background"
 	"github.com/zllovesuki/G14Manager/util"
-	"github.com/zllovesuki/G14Manager/web"
 
-	suture "github.com/thejerf/suture/v4"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -58,35 +58,59 @@ func main() {
 		log.Fatalf("[supervisor] cannot get dependencies\n")
 	}
 
-	managerCtrl := make(chan server.ManagerSupervisorRequest, 1)
+	// childToken = supervisor.Add(controllerSupervisor)
 
-	grpcServer, err := supervisor.NewGRPCServer(supervisor.GRPCRunConfig{
-		ManagerReqCh: managerCtrl,
-		Dependencies: dep,
-	})
-	if err != nil {
-		log.Fatalf("[supervisor] cannot create gRPCServer: %+v\n", err)
-	}
+	// managerCtrl := make(chan server.ManagerSupervisorRequest, 1)
+
+	// grpcServer, err := supervisor.NewGRPCServer(supervisor.GRPCRunConfig{
+	// 	ManagerReqCh: managerCtrl,
+	// 	Dependencies: dep,
+	// })
+	// if err != nil {
+	// 	log.Fatalf("[supervisor] cannot create gRPCServer: %+v\n", err)
+	// }
 
 	// Web Server
-	web.NewHttpServer(dep)
+	// web.NewHttpServer(dep)
 	// if err != nil {
 	// 	log.Fatalf("[supervisor] failed to create HTTP web server: %+v\n", err)
 	// }
 
-	log.Print("TEST")
+	// managerResponder := &supervisor.ManagerResponder{
+	// 	Dependencies:     dep,
+	// 	ManagerReqCh:     managerCtrl,
+	// 	ControllerConfig: controllerConfig,
+	// }
 
-	managerResponder := &supervisor.ManagerResponder{
-		Dependencies:     dep,
-		ManagerReqCh:     managerCtrl,
-		ControllerConfig: controllerConfig,
-	}
-
-	evtHook := &supervisor.EventHook{
-		Notifier: notifier.C,
-	}
+	// evtHook := &supervisor.EventHook{
+	// 	Notifier: notifier.C,
+	// }
 
 	ctx, cancel := context.WithCancel(context.Background())
+
+	go func() {
+		log.Printf("Starting controller...")
+		control, _, err := controller.New(controllerConfig, dep)
+		log.Printf("Starting controller 2")
+
+		// controllerStartErr := <-controllerStartErrCh
+		// if controllerStartErr != nil {
+		// 	log.Printf("[supervisor] failed to start controller\n")
+		// 	log.Fatal(err)
+		// 	return
+		// }
+
+		if err != nil {
+			log.Printf("[supervisor] cannot start controller\n")
+			log.Fatal(err)
+			return
+		}
+
+		controllerSupervisor := suture.New("controllerSupervisor", suture.Spec{})
+		controllerSupervisor.Add(control)
+
+		control.Serve(ctx)
+	}()
 
 	/*
 		How the supervisor tree is structured:
@@ -126,17 +150,17 @@ func main() {
 	// backgroundSupervisor.Add(versionChecker)
 	backgroundSupervisor.Add(notifier)
 
-	grpcSupervisor := suture.New("gRPCSupervisor", suture.Spec{})
-	managerResponder.SetSupervisor(grpcSupervisor)
-	grpcSupervisor.Add(grpcServer)
-	grpcSupervisor.Add(managerResponder)
+	// grpcSupervisor := suture.New("gRPCSupervisor", suture.Spec{})
+	// managerResponder.SetSupervisor(grpcSupervisor)
+	// grpcSupervisor.Add(grpcServer)
+	// grpcSupervisor.Add(managerResponder)
 
 	rootSupervisor := suture.New("Supervisor", suture.Spec{
-		EventHook: evtHook.Event,
+		// EventHook: evtHook.Event,
 	})
-	rootSupervisor.Add(grpcSupervisor)
+	// rootSupervisor.Add(grpcSupervisor)
 	rootSupervisor.Add(backgroundSupervisor)
-	rootSupervisor.Add(NewWeb(grpcServer.GetWebHandler()))
+	// rootSupervisor.Add(NewWeb(grpcServer.GetWebHandler()))
 
 	sigc := make(chan os.Signal, 1)
 

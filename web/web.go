@@ -63,7 +63,12 @@ func NewHttpServer(dep *controller.Dependencies) *gin.Engine {
 							"message": "No argument provided. Either 'increase', 'decrease', or 'value' are required",
 						},
 					})
+
+					return
 				}
+
+				// Save
+				dep.ConfigRegistry.Save()
 
 				c.JSON(200, gin.H{
 					"message": "succcess",
@@ -89,6 +94,9 @@ func NewHttpServer(dep *controller.Dependencies) *gin.Engine {
 
 				if c.ShouldBindJSON(&body) == nil {
 					dep.Keyboard.Config.RogKey = body.Actions
+					// dep.Keyboard.Apply()
+					// dep.ConfigRegistry.Register(dep.Keyboard)
+					dep.ConfigRegistry.Save()
 
 					c.JSON(200, gin.H{
 						"message": "Successfully set new ROG key bindings!",

@@ -22,11 +22,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zllovesuki/G14Manager/rpc/announcement"
+	// "github.com/zllovesuki/G14Manager/rpc/announcement"
 	"github.com/zllovesuki/G14Manager/system/atkacpi"
 	"github.com/zllovesuki/G14Manager/system/plugin"
 	"github.com/zllovesuki/G14Manager/system/power"
-	"github.com/zllovesuki/G14Manager/system/shared"
 	"github.com/zllovesuki/G14Manager/util"
 )
 
@@ -307,36 +306,35 @@ func (c *Control) Notify(t plugin.Notification) {
 	c.queue <- t
 }
 
-var _ announcement.Updatable = &Control{}
+// var _ announcement.Updatable = &Control{}
 
 func (c *Control) Name() string {
 	return persistKey
 }
 
-func (c *Control) ConfigUpdate(u announcement.Update) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+// func (c *Control) ConfigUpdate(u announcement.Update) {
+// 	c.mu.Lock()
+// 	defer c.mu.Unlock()
 
-	switch u.Type {
-	case announcement.FeaturesUpdate:
-		feats, ok := u.Config.(shared.Features)
-		if !ok {
-			return
-		}
+// 	switch u.Type {
+// 	case announcement.FeaturesUpdate:
+// 		feats, ok := u.Config.(shared.Features)
+// 		if !ok {
+// 			return
+// 		}
 
-		// TODO: validate input
-		c.AutoThermal = feats.AutoThermal.Enabled
-		c.AutoThermalConfig.PluggedIn = feats.AutoThermal.PluggedIn
-		c.AutoThermalConfig.Unplugged = feats.AutoThermal.Unplugged
-	case announcement.ProfilesUpdate:
-		profiles, ok := u.Config.([]Profile)
-		if !ok {
-			return
-		}
+// 		// TODO: validate input
+// 		c.AutoThermal = feats.AutoThermal.Enabled
+// 		c.AutoThermalConfig.PluggedIn = feats.AutoThermal.PluggedIn
+// 		c.AutoThermalConfig.Unplugged = feats.AutoThermal.Unplugged
+// 	case announcement.ProfilesUpdate:
+// 		profiles, ok := u.Config.([]Profile)
+// 		if !ok {
+// 			return
+// 		}
 
-		// TODO: disable autothermal if profiles mismatch
+// 		// TODO: disable autothermal if profiles mismatch
 
-		c.Profiles = profiles
-	}
-
-}
+// 		c.Profiles = profiles
+// 	}
+// }

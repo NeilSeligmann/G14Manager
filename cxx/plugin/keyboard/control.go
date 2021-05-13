@@ -27,14 +27,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/zllovesuki/G14Manager/rpc/announcement"
+	// "github.com/zllovesuki/G14Manager/rpc/announcement"
 	"github.com/zllovesuki/G14Manager/system/device"
 	"github.com/zllovesuki/G14Manager/system/ioctl"
 	"github.com/zllovesuki/G14Manager/system/keyboard"
 	kb "github.com/zllovesuki/G14Manager/system/keyboard"
 	"github.com/zllovesuki/G14Manager/system/persist"
 	"github.com/zllovesuki/G14Manager/system/plugin"
-	"github.com/zllovesuki/G14Manager/system/shared"
 	"github.com/zllovesuki/G14Manager/util"
 
 	"github.com/karalabe/usb"
@@ -378,25 +377,24 @@ func (c *Control) EmulateKeyPress(keyCode uint16) error {
 	return nil
 }
 
-var _ announcement.Updatable = &Control{}
+// var _ announcement.Updatable = &Control{}
 
-func (c *Control) ConfigUpdate(u announcement.Update) {
-	if u.Type != announcement.FeaturesUpdate {
-		return
-	}
+// func (c *Control) ConfigUpdate(u announcement.Update) {
+// 	if u.Type != announcement.FeaturesUpdate {
+// 		return
+// 	}
 
-	c.mu.Lock()
-	defer c.mu.Unlock()
+// 	c.mu.Lock()
+// 	defer c.mu.Unlock()
 
-	feats, ok := u.Config.(shared.Features)
-	if !ok {
-		return
-	}
+// 	feats, ok := u.Config.(shared.Features)
+// 	if !ok {
+// 		return
+// 	}
 
-	c.Remap = feats.FnRemap
-	c.RogKey = feats.RogRemap
-
-}
+// 	c.Remap = feats.FnRemap
+// 	c.RogKey = feats.RogRemap
+// }
 
 var _ persist.Registry = &Control{}
 
