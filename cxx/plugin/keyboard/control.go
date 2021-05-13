@@ -28,6 +28,7 @@ import (
 	"time"
 
 	// "github.com/zllovesuki/G14Manager/rpc/announcement"
+	"github.com/micmonay/keybd_event"
 	"github.com/zllovesuki/G14Manager/system/device"
 	"github.com/zllovesuki/G14Manager/system/ioctl"
 	"github.com/zllovesuki/G14Manager/system/keyboard"
@@ -235,10 +236,23 @@ func (c *Control) loop(haltCtx context.Context, cb chan<- plugin.Callback) {
 							Event: plugin.CbPersistConfig,
 						}
 					}
-				case keyboard.KeyFnLeft, keyboard.KeyFnRight:
-					if remap, ok := c.Config.Remap[keycode]; ok {
-						c.EmulateKeyPress(remap)
+				case keyboard.KeyFnF4:
+					kb, err := keybd_event.NewKeyBonding()
+					if err != nil {
+						panic(err)
 					}
+
+					kb.SetKeys(keybd_event.VK_MEDIA_PLAY_PAUSE)
+					err = kb.Launching()
+					if err != nil {
+						panic(err)
+					}
+
+					// case keyboard.KeyFnLeft, keyboard.KeyFnRight:
+					// c.EmulateKeyPress(4274)
+					// if remap, ok := c.Config.Remap[keycode]; ok {
+					// 	c.EmulateKeyPress(remap)
+					// }
 				}
 			case plugin.EvtACPIResume:
 				log.Println("kbCtrl: reinitialize kbCtrl")
@@ -376,25 +390,6 @@ func (c *Control) EmulateKeyPress(keyCode uint16) error {
 
 	return nil
 }
-
-// var _ announcement.Updatable = &Control{}
-
-// func (c *Control) ConfigUpdate(u announcement.Update) {
-// 	if u.Type != announcement.FeaturesUpdate {
-// 		return
-// 	}
-
-// 	c.mu.Lock()
-// 	defer c.mu.Unlock()
-
-// 	feats, ok := u.Config.(shared.Features)
-// 	if !ok {
-// 		return
-// 	}
-
-// 	c.Remap = feats.FnRemap
-// 	c.RogKey = feats.RogRemap
-// }
 
 var _ persist.Registry = &Control{}
 

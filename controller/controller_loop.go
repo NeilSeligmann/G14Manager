@@ -67,13 +67,11 @@ func (c *Controller) handlePowerEvent(haltCtx context.Context) {
 
 func (c *Controller) handleKeyPress(haltCtx context.Context) {
 	for {
-		// print("Key press: ")
-		// println(<-c.keyCodeCh)
-
-		// keyCode := <-c.keyCodeCh
-
 		select {
 		case keyCode := <-c.keyCodeCh:
+			// log.Printf("Key press: ")
+			// log.Println(keyCode)
+
 			switch keyCode {
 			case kb.KeyROG:
 				log.Println("hid: ROG Key Pressed (debounced)")
@@ -110,8 +108,9 @@ func (c *Controller) handleKeyPress(haltCtx context.Context) {
 			case
 				kb.KeyMuteMic,
 				kb.KeyTpadToggle,
-				kb.KeyFnLeft,
-				kb.KeyFnRight,
+				kb.KeyFnF4,
+				// kb.KeyFnLeft,
+				// kb.KeyFnRight,
 				kb.KeyFnUp,
 				kb.KeyFnDown:
 				c.notifyPlugins(plugin.EvtKeyboardFn, keyCode)

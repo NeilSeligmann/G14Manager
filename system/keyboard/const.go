@@ -10,6 +10,7 @@ const (
 // Define key codes
 const (
 	KeyROG        uint32 = 56
+	KeyFnF4       uint32 = 179
 	KeyFnF5       uint32 = 174
 	KeyVolUp      uint32 = 233
 	KeyVolDown    uint32 = 234
@@ -19,12 +20,12 @@ const (
 	KeyLCDDown    uint32 = 16
 	KeySleep      uint32 = 108
 	KeyRFKill     uint32 = 136
-	KeyFnLeft     uint32 = 178
-	KeyFnRight    uint32 = 179
-	KeyFnUp       uint32 = 196
-	KeyFnDown     uint32 = 197
-	KeyFnC        uint32 = 158
-	KeyFnV        uint32 = 138
+	// KeyFnLeft     uint32 = 178
+	// KeyFnRight    uint32 = 179
+	KeyFnUp   uint32 = 196
+	KeyFnDown uint32 = 197
+	KeyFnC    uint32 = 158
+	KeyFnV    uint32 = 138
 
 	KeyPgUp   uint16 = 0x49
 	KeyPgDown uint16 = 0x51

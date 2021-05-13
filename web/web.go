@@ -21,18 +21,13 @@ func NewHttpServer(dep *controller.Dependencies) *gin.Engine {
 
 	v1 := r.Group("/v1")
 	{
+		v1.POST("/save", func(c *gin.Context) {
+			dep.ConfigRegistry.Save()
+		})
+
 		// Keyboard Routes
 		kb := v1.Group("/keyboard")
 		{
-			// kb.GET("/", func(c *gin.Context) {
-			// 	c.JSON(200, gin.H{
-			// 		"message": "Successfully fetched keyboard data",
-			// 		"keyboard": gin.H{
-			// 			"currentBrightness": dep.Keyboard.CurrentBrightness(),
-			// 		},
-			// 	})
-			// })
-
 			kb.POST("/brightness", func(c *gin.Context) {
 				increase := c.Query("increase")
 				decrease := c.Query("decrease")
@@ -94,9 +89,6 @@ func NewHttpServer(dep *controller.Dependencies) *gin.Engine {
 
 				if c.ShouldBindJSON(&body) == nil {
 					dep.Keyboard.Config.RogKey = body.Actions
-					// dep.Keyboard.Apply()
-					// dep.ConfigRegistry.Register(dep.Keyboard)
-					dep.ConfigRegistry.Save()
 
 					c.JSON(200, gin.H{
 						"message": "Successfully set new ROG key bindings!",
