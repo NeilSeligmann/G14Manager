@@ -10,6 +10,7 @@ import (
 
 	suture "github.com/thejerf/suture/v4"
 	"github.com/zllovesuki/G14Manager/controller"
+	"github.com/zllovesuki/G14Manager/web"
 
 	// "github.com/zllovesuki/G14Manager/rpc/server"
 
@@ -71,7 +72,7 @@ func main() {
 	// }
 
 	// Web Server
-	// web.NewHttpServer(dep)
+	web.NewHttpServer(dep)
 	// if err != nil {
 	// 	log.Fatalf("[supervisor] failed to create HTTP web server: %+v\n", err)
 	// }
@@ -91,7 +92,6 @@ func main() {
 	go func() {
 		log.Printf("Starting controller...")
 		control, _, err := controller.New(controllerConfig, dep)
-		log.Printf("Starting controller 2")
 
 		// controllerStartErr := <-controllerStartErrCh
 		// if controllerStartErr != nil {
@@ -112,39 +112,9 @@ func main() {
 		control.Serve(ctx)
 	}()
 
-	/*
-		How the supervisor tree is structured:
-			gRPCSupervisor:		supervisor/grpc.go
-			gRPCServer: 		rpc/server
-			ManagerResponder:	supervisor/responder.go
-			versionChecker:		supervisor/background/version.go
-			osdNotifier:		supervisor/background/notifier.go
-			controller:			controller
-
-								rootSupervisor  +----+  externalWeb
-									+    +
-									|    |
-									|    |
-				gRPCSupervisor  +---+    +---+   backgroundSupervisor
-				+ + +                            + +
-				| | |                            | |
-				| | +-> gRPCServer               | +-> versionChecker
-				| |                              |
-				| |                              |
-				| +---> ManagerResponder         +---> osdNotifier
-				|
-				|
-				+-----> controllerSupervisor
-							+
-							|
-							+-> Controller
-
-		Since the gRPCServer can control the lifecycle of the Controller,
-		we need a two-way communication between the gRPCSupervisor and
-		the gRPC ManagerServer via ManagerReqCh. The coordination is handled
-		by ManagerResponder
-
-	*/
+	// ------------
+	// Supervisors
+	// ------------
 
 	backgroundSupervisor := suture.New("backgroundSupervisor", suture.Spec{})
 	// backgroundSupervisor.Add(versionChecker)
@@ -161,6 +131,10 @@ func main() {
 	// rootSupervisor.Add(grpcSupervisor)
 	rootSupervisor.Add(backgroundSupervisor)
 	// rootSupervisor.Add(NewWeb(grpcServer.GetWebHandler()))
+
+	// -------------
+	// Close Signal
+	// -------------
 
 	sigc := make(chan os.Signal, 1)
 

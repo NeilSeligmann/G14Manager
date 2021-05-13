@@ -17,7 +17,7 @@ import "C"
 
 import (
 	"context"
-	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os/exec"
@@ -112,9 +112,10 @@ type Control struct {
 // no actual IOs will be performed. Remap defines the key remapping behavior or
 // Fn+ArrowLeft/ArrowRight (see system/keyboard) to standard key scancode.
 type Config struct {
-	DryRun bool
-	Remap  map[uint32]uint16
-	RogKey []string
+	DryRun          bool
+	Remap           map[uint32]uint16
+	RogKey          []string `json:"rogKey"`
+	BrightnessLevel byte     `json:"brightnessLevel"`
 }
 
 var _ plugin.Plugin = &Control{}
@@ -127,7 +128,6 @@ func NewControl(config Config) (*Control, error) {
 	}
 	var path string
 	for _, device := range devices {
-		log.Printf(device.Path)
 		if strings.Contains(device.Path, kbControlDevice) {
 			path = device.Path
 		}
@@ -286,7 +286,7 @@ func (c *Control) CurrentBrightness() Level {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
-	return c.currentBrightness
+	return Level(c.Config.BrightnessLevel)
 }
 
 // SetBrightness change the keyboard backlight directly
@@ -306,7 +306,7 @@ func (c *Control) SetBrightness(v Level) error {
 		return err
 	}
 
-	c.currentBrightness = v
+	c.Config.BrightnessLevel = byte(v)
 
 	return nil
 }
@@ -314,7 +314,7 @@ func (c *Control) SetBrightness(v Level) error {
 // BrightnessUp increases the keyboard backlight by one level
 func (c *Control) BrightnessUp() error {
 	var targetLevel Level
-	switch c.currentBrightness {
+	switch Level(c.Config.BrightnessLevel) {
 	case OFF:
 		targetLevel = LOW
 	case LOW:
@@ -330,7 +330,7 @@ func (c *Control) BrightnessUp() error {
 // BrightnessDown decreases the keyboard backlight by one level
 func (c *Control) BrightnessDown() error {
 	var targetLevel Level
-	switch c.currentBrightness {
+	switch Level(c.Config.BrightnessLevel) {
 	case HIGH:
 		targetLevel = MEDIUM
 	case MEDIUM:
@@ -408,9 +408,8 @@ func (c *Control) Value() []byte {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
-	buf := make([]byte, 2)
-	binary.LittleEndian.PutUint16(buf, uint16(c.currentBrightness))
-	return buf
+	file, _ := json.MarshalIndent(c.Config, "", "")
+	return file
 }
 
 // Load satisfies persist.Registry
@@ -422,14 +421,17 @@ func (c *Control) Load(v []byte) error {
 	if len(v) == 0 {
 		return nil
 	}
-	c.currentBrightness = Level(binary.LittleEndian.Uint16(v))
+
+	// Load saved data
+	json.Unmarshal(v, &c.Config)
+
 	return nil
 }
 
 // Apply satisfies persist.Registry
 func (c *Control) Apply() error {
 	// mutex already in setBrightness
-	return c.SetBrightness(c.currentBrightness)
+	return c.SetBrightness(Level(c.Config.BrightnessLevel))
 }
 
 // Close satisfied persist.Registry

@@ -10,7 +10,7 @@ import (
 
 const (
 	registryKey  = registry.LOCAL_MACHINE
-	registryPath = `SOFTWARE\G14Manager`
+	registryPath = `SOFTWARE\G15Manager`
 )
 
 // RegistryConfigHelper contains a list of configurations to be loaded, saved, and applied
