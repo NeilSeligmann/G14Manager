@@ -1,4 +1,4 @@
-# G15Manager: An open source replacement to manage your zephyrus G15
+# G15Manager: An open source replacement to manage your Asus Zephyrus G15
 
 ![Test and Build](https://github.com/NeilSeligmann/G15Manager/workflows/Test%20and%20Build/badge.svg) ![Build Release](https://github.com/NeilSeligmann/G15Manager/workflows/Build%20Release/badge.svg) [![GoDoc](https://godoc.org/github.com/zllovesuki/G15Manager?status.svg)](https://godoc.org/github.com/NeilSeligmann/G15Manager)
 
