@@ -10,6 +10,12 @@ import (
 func NewHttpServer(dep *controller.Dependencies) *gin.Engine {
 	r := gin.Default()
 
+	var whitelist map[string]bool = map[string]bool{
+		"127.0.0.1": true,
+	}
+
+	r.Use(IPWhiteList(whitelist))
+
 	r.GET("/ping", func(c *gin.Context) {
 		// dep.Volume.ToggleMuted()
 		dep.Keyboard.BrightnessUp()
