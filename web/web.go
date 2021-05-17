@@ -31,6 +31,9 @@ func NewHttpServer(dep *controller.Dependencies) *gin.Engine {
 			dep.ConfigRegistry.Save()
 		})
 
+		// Web Socket
+		v1.GET("/websocket", socketHandler)
+
 		// Keyboard Routes
 		kb := v1.Group("/keyboard")
 		{
@@ -105,7 +108,36 @@ func NewHttpServer(dep *controller.Dependencies) *gin.Engine {
 					})
 				}
 			})
+		}
 
+		// Thermal Routes
+		thermal := v1.Group("/thermal")
+		{
+			profiles := thermal.Group("/profiles")
+			{
+				profiles.GET("/", func(c *gin.Context) {
+					c.JSON(200, gin.H{
+						"message":  "Successfully fetched all profiles!",
+						"profiles": dep.Thermal.Profiles,
+					})
+				})
+
+				profiles.GET("/current", func(c *gin.Context) {
+					c.JSON(200, gin.H{
+						"message":        "Profile successfully switched!",
+						"currentProfile": dep.Thermal.CurrentProfile(),
+					})
+				})
+
+				profiles.POST("/switch", func(c *gin.Context) {
+					value := c.Query("value")
+					dep.Thermal.SwitchToProfile(value)
+
+					c.JSON(200, gin.H{
+						"message": "Profile successfully switched!",
+					})
+				})
+			}
 		}
 	}
 
@@ -114,4 +146,8 @@ func NewHttpServer(dep *controller.Dependencies) *gin.Engine {
 	}()
 
 	return r
+}
+
+func NewWebSocketServer(dep *controller.Dependencies) {
+
 }

@@ -11,6 +11,7 @@ require (
 	github.com/gin-gonic/gin v1.7.1 // indirect
 	github.com/go-playground/validator/v10 v10.6.0 // indirect
 	github.com/golang/protobuf v1.5.2
+	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/improbable-eng/grpc-web v0.14.0 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9
