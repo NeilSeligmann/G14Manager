@@ -16,6 +16,7 @@ device 0x25 in profile 0x2 has fan curve [20 50 55 60 65 70 75 98 25 28 34 40 44
 import (
 	"context"
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -47,6 +48,7 @@ const (
 // Control defines contains the Windows Power Option and list of thermal profiles
 type Control struct {
 	Config
+	PersistConfig
 
 	mu                  sync.RWMutex
 	wmi                 atkacpi.WMI
@@ -68,6 +70,10 @@ type Config struct {
 	}
 }
 
+type PersistConfig struct {
+	CurrentProfile int `json:currentProfile`
+}
+
 var _ plugin.Plugin = &Control{}
 
 // NewControl allows you to cycle to the next thermal profile
@@ -87,13 +93,16 @@ func NewControl(conf Config) (*Control, error) {
 		}
 	}
 
-	return &Control{
+	ctrl := &Control{
 		Config:              conf,
+		PersistConfig:       PersistConfig{},
 		wmi:                 conf.WMI,
 		currentProfileIndex: 0,
 		errorCh:             make(chan error),
 		queue:               make(chan plugin.Notification),
-	}, nil
+	}
+
+	return ctrl, nil
 }
 
 // CurrentProfile will return the currently active Profile
@@ -302,10 +311,6 @@ func (c *Control) Notify(t plugin.Notification) {
 
 // var _ announcement.Updatable = &Control{}
 
-func (c *Control) Name() string {
-	return persistKey
-}
-
 func (c *Control) GetWSInfo() gin.H {
 	return gin.H{
 		"profiles": gin.H{
@@ -313,6 +318,59 @@ func (c *Control) GetWSInfo() gin.H {
 			"available": c.Profiles,
 		},
 	}
+}
+
+// Name satisfies persist.Registry
+func (c *Control) Name() string {
+	return persistKey
+}
+
+// Value satisfies persist.Registry
+func (c *Control) Value() []byte {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	// Set persist config data
+	c.PersistConfig.CurrentProfile = c.currentProfileIndex
+
+	file, _ := json.MarshalIndent(c.PersistConfig, "", "")
+	return file
+}
+
+// Load satisfies persist.Registry
+// TODO: check if the input is actually valid
+func (c *Control) Load(v []byte) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if len(v) == 0 {
+		return nil
+	}
+
+	// loadedConf := &PersistConfig{
+	// 	CurrentProfile: 0,
+	// }
+
+	// Load saved data
+	json.Unmarshal(v, &c.PersistConfig)
+
+	return nil
+}
+
+// Apply satisfies persist.Registry
+func (c *Control) Apply() error {
+	log.Printf("Reg Apply!")
+
+	_, err := c.setProfile(c.PersistConfig.CurrentProfile)
+	return err
+}
+
+// Close satisfied persist.Registry
+func (c *Control) Close() error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	return nil
 }
 
 // func (c *Control) ConfigUpdate(u announcement.Update) {
