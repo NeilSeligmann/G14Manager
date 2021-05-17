@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -24,23 +26,44 @@ import (
 var (
 	Version     = "v0.0.0-dev"
 	IsDebug     = "yes"
-	logLocation = `C:\Logs\G15Manager.log`
+	logLocation = `G15Manager.log`
+	IsPrelogin  = false
 )
 
 func main() {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	logLocation = dir + "/" + logLocation
+
+	logger := &lumberjack.Logger{
+		Filename:   logLocation,
+		MaxSize:    5,
+		MaxBackups: 3,
+		MaxAge:     7,
+		Compress:   true,
+	}
 
 	if IsDebug == "no" {
-		log.SetOutput(&lumberjack.Logger{
-			Filename:   logLocation,
-			MaxSize:    5,
-			MaxBackups: 3,
-			MaxAge:     7,
-			Compress:   true,
-		})
+		log.SetOutput(logger)
+	} else {
+		mw := io.MultiWriter(os.Stdout, logger)
+		log.SetOutput(mw)
 	}
 
 	log.Printf("G15Manager version: %s\n", Version)
 
+	// Process arguments
+	for _, a := range os.Args[1:] {
+		if a == "--prelogin" {
+			log.Printf("Pre-login mode!")
+			IsPrelogin = true
+		}
+	}
+
+	// Notifier
 	notifier := background.NewNotifier()
 
 	// versionChecker, err := background.NewVersionCheck(Version, "zllovesuki/G15Manager", notifier.C)
@@ -59,36 +82,11 @@ func main() {
 		log.Fatalf("[supervisor] cannot get dependencies\n")
 	}
 
-	// childToken = supervisor.Add(controllerSupervisor)
-
-	// managerCtrl := make(chan server.ManagerSupervisorRequest, 1)
-
-	// grpcServer, err := supervisor.NewGRPCServer(supervisor.GRPCRunConfig{
-	// 	ManagerReqCh: managerCtrl,
-	// 	Dependencies: dep,
-	// })
-	// if err != nil {
-	// 	log.Fatalf("[supervisor] cannot create gRPCServer: %+v\n", err)
-	// }
-
-	// Web Server
-	web.NewHttpServer(dep)
-	// if err != nil {
-	// 	log.Fatalf("[supervisor] failed to create HTTP web server: %+v\n", err)
-	// }
-
-	// managerResponder := &supervisor.ManagerResponder{
-	// 	Dependencies:     dep,
-	// 	ManagerReqCh:     managerCtrl,
-	// 	ControllerConfig: controllerConfig,
-	// }
-
-	// evtHook := &supervisor.EventHook{
-	// 	Notifier: notifier.C,
-	// }
-
 	ctx, cancel := context.WithCancel(context.Background())
 
+	// ------------
+	// Controller
+	// ------------
 	go func() {
 		log.Printf("Starting controller...")
 		control, _, err := controller.New(controllerConfig, dep)
@@ -112,6 +110,20 @@ func main() {
 		control.Serve(ctx)
 	}()
 
+	// Exit if pre-login mode
+	if IsPrelogin {
+		log.Printf("Pre-login mode finished! Closing...")
+		os.Exit(0)
+	}
+
+	// ------------
+	// Web Server
+	// ------------
+	web.NewHttpServer(dep)
+	// if err != nil {
+	// 	log.Fatalf("[supervisor] failed to create HTTP web server: %+v\n", err)
+	// }
+
 	// ------------
 	// Supervisors
 	// ------------
@@ -119,11 +131,6 @@ func main() {
 	backgroundSupervisor := suture.New("backgroundSupervisor", suture.Spec{})
 	// backgroundSupervisor.Add(versionChecker)
 	backgroundSupervisor.Add(notifier)
-
-	// grpcSupervisor := suture.New("gRPCSupervisor", suture.Spec{})
-	// managerResponder.SetSupervisor(grpcSupervisor)
-	// grpcSupervisor.Add(grpcServer)
-	// grpcSupervisor.Add(managerResponder)
 
 	rootSupervisor := suture.New("Supervisor", suture.Spec{
 		// EventHook: evtHook.Event,
