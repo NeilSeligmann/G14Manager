@@ -112,6 +112,7 @@ func main() {
 
 	// Exit if pre-login mode
 	if IsPrelogin {
+		time.Sleep(3 * time.Second)
 		log.Printf("Pre-login mode finished! Closing...")
 		os.Exit(0)
 	}
