@@ -6,11 +6,11 @@ import (
 	"log"
 	"runtime"
 
-	"github.com/zllovesuki/G14Manager/system/atkacpi"
-	kb "github.com/zllovesuki/G14Manager/system/keyboard"
-	"github.com/zllovesuki/G14Manager/system/plugin"
-	"github.com/zllovesuki/G14Manager/system/power"
-	"github.com/zllovesuki/G14Manager/util"
+	"github.com/NeilSeligmann/G15Manager/system/atkacpi"
+	kb "github.com/NeilSeligmann/G15Manager/system/keyboard"
+	"github.com/NeilSeligmann/G15Manager/system/plugin"
+	"github.com/NeilSeligmann/G15Manager/system/power"
+	"github.com/NeilSeligmann/G15Manager/util"
 
 	"github.com/pkg/errors"
 )

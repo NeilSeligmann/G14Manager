@@ -27,15 +27,15 @@ import (
 	"syscall"
 	"time"
 
-	// "github.com/zllovesuki/G14Manager/rpc/announcement"
+	// "github.com/NeilSeligmann/G15Manager/rpc/announcement"
+	"github.com/NeilSeligmann/G15Manager/system/device"
+	"github.com/NeilSeligmann/G15Manager/system/ioctl"
+	"github.com/NeilSeligmann/G15Manager/system/keyboard"
+	kb "github.com/NeilSeligmann/G15Manager/system/keyboard"
+	"github.com/NeilSeligmann/G15Manager/system/persist"
+	"github.com/NeilSeligmann/G15Manager/system/plugin"
+	"github.com/NeilSeligmann/G15Manager/util"
 	"github.com/micmonay/keybd_event"
-	"github.com/zllovesuki/G14Manager/system/device"
-	"github.com/zllovesuki/G14Manager/system/ioctl"
-	"github.com/zllovesuki/G14Manager/system/keyboard"
-	kb "github.com/zllovesuki/G14Manager/system/keyboard"
-	"github.com/zllovesuki/G14Manager/system/persist"
-	"github.com/zllovesuki/G14Manager/system/plugin"
-	"github.com/zllovesuki/G14Manager/util"
 
 	"github.com/karalabe/usb"
 )

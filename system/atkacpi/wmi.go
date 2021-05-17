@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/zllovesuki/G14Manager/system/device"
-	"github.com/zllovesuki/G14Manager/system/ioctl"
+	"github.com/NeilSeligmann/G15Manager/system/device"
+	"github.com/NeilSeligmann/G15Manager/system/ioctl"
 )
 
 // Method defines the WMI method IDs

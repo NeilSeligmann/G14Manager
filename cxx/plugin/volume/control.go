@@ -12,9 +12,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zllovesuki/G14Manager/system/keyboard"
-	"github.com/zllovesuki/G14Manager/system/plugin"
-	"github.com/zllovesuki/G14Manager/util"
+	"github.com/NeilSeligmann/G15Manager/system/keyboard"
+	"github.com/NeilSeligmann/G15Manager/system/plugin"
+	"github.com/NeilSeligmann/G15Manager/util"
 )
 
 type Control struct {

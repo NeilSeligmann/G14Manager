@@ -1,4 +1,4 @@
-module github.com/zllovesuki/G14Manager
+module github.com/NeilSeligmann/G15Manager
 
 go 1.16
 

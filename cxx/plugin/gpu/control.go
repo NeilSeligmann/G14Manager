@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/zllovesuki/G14Manager/system/plugin"
-	"github.com/zllovesuki/G14Manager/util"
+	"github.com/NeilSeligmann/G15Manager/system/plugin"
+	"github.com/NeilSeligmann/G15Manager/util"
 )
 
 type Control struct {

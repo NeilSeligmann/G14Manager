@@ -5,12 +5,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/zllovesuki/G14Manager/system/atkacpi"
-	"github.com/zllovesuki/G14Manager/system/keyboard"
-	"github.com/zllovesuki/G14Manager/system/persist"
-	"github.com/zllovesuki/G14Manager/system/plugin"
-	"github.com/zllovesuki/G14Manager/system/power"
-	"github.com/zllovesuki/G14Manager/util"
+	"github.com/NeilSeligmann/G15Manager/system/atkacpi"
+	"github.com/NeilSeligmann/G15Manager/system/keyboard"
+	"github.com/NeilSeligmann/G15Manager/system/persist"
+	"github.com/NeilSeligmann/G15Manager/system/plugin"
+	"github.com/NeilSeligmann/G15Manager/system/power"
+	"github.com/NeilSeligmann/G15Manager/util"
 
 	"github.com/pkg/errors"
 	suture "github.com/thejerf/suture/v4"

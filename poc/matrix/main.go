@@ -7,7 +7,7 @@ import (
 	"time"
 	"unicode"
 
-	mc "github.com/zllovesuki/G14Manager/cxx/MatrixController"
+	mc "github.com/NeilSeligmann/G15Manager/cxx/MatrixController"
 )
 
 func fillBuffer(in []byte, out []byte) {

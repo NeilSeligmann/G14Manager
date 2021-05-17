@@ -7,9 +7,9 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/zllovesuki/G14Manager/cxx/rr"
-	"github.com/zllovesuki/G14Manager/system/plugin"
-	"github.com/zllovesuki/G14Manager/util"
+	"github.com/NeilSeligmann/G15Manager/cxx/rr"
+	"github.com/NeilSeligmann/G15Manager/system/plugin"
+	"github.com/NeilSeligmann/G15Manager/util"
 )
 
 type Control struct {

@@ -11,7 +11,7 @@
 namespace
 {
 
-    char const *className{"G14Manager"};
+    char const *className{"G15Manager"};
     char const *windowTitle{"OSD for various info"};
 
     std::map<HWND, std::shared_ptr<Window>> handleWindowMap{};

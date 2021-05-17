@@ -3,19 +3,19 @@ package controller
 import (
 	"fmt"
 
-	"github.com/zllovesuki/G14Manager/cxx/plugin/gpu"
-	"github.com/zllovesuki/G14Manager/cxx/plugin/keyboard"
-	"github.com/zllovesuki/G14Manager/cxx/plugin/rr"
-	"github.com/zllovesuki/G14Manager/cxx/plugin/volume"
+	"github.com/NeilSeligmann/G15Manager/cxx/plugin/gpu"
+	"github.com/NeilSeligmann/G15Manager/cxx/plugin/keyboard"
+	"github.com/NeilSeligmann/G15Manager/cxx/plugin/rr"
+	"github.com/NeilSeligmann/G15Manager/cxx/plugin/volume"
 
-	// "github.com/zllovesuki/G14Manager/rpc/announcement"
-	"github.com/zllovesuki/G14Manager/system/atkacpi"
-	"github.com/zllovesuki/G14Manager/system/battery"
-	"github.com/zllovesuki/G14Manager/system/persist"
-	"github.com/zllovesuki/G14Manager/system/plugin"
-	"github.com/zllovesuki/G14Manager/system/power"
-	"github.com/zllovesuki/G14Manager/system/thermal"
-	"github.com/zllovesuki/G14Manager/util"
+	// "github.com/NeilSeligmann/G15Manager/rpc/announcement"
+	"github.com/NeilSeligmann/G15Manager/system/atkacpi"
+	"github.com/NeilSeligmann/G15Manager/system/battery"
+	"github.com/NeilSeligmann/G15Manager/system/persist"
+	"github.com/NeilSeligmann/G15Manager/system/plugin"
+	"github.com/NeilSeligmann/G15Manager/system/power"
+	"github.com/NeilSeligmann/G15Manager/system/thermal"
+	"github.com/NeilSeligmann/G15Manager/util"
 
 	"github.com/pkg/errors"
 )

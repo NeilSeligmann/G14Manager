@@ -20,7 +20,7 @@ Invoke-Expression $CommandInstallRSRC
 # easier for us to debug
 Get-ChildItem $GOBIN
 
-$RSRC = $GOBIN + "\rsrc.exe -arch amd64 -manifest .\cmd\manager\G14Manager.exe.manifest -ico .\cmd\manager\go.ico -o .\cmd\manager\G14Manager.exe.syso"
+$RSRC = $GOBIN + "\rsrc.exe -arch amd64 -manifest .\cmd\manager\G15Manager.exe.manifest -ico .\cmd\manager\go.ico -o .\cmd\manager\G15Manager.exe.syso"
 Invoke-Expression $RSRC
 
 # Stupid go mod download writes to stderr
@@ -40,12 +40,12 @@ Invoke-Expression $PACKED
 Write-Host "Building prod release"
 
 # $BUILD = "go build -tags 'use_cgo' -ldflags='-H=windowsgui -s -w' ."
-$BUILD = "go build -ldflags=`"-H=windowsgui -s -w -X 'main.Version=$LatestTag' -X 'main.IsDebug=no'`" -o build/G14Manager.exe .\cmd\manager"
+$BUILD = "go build -ldflags=`"-H=windowsgui -s -w -X 'main.Version=$LatestTag' -X 'main.IsDebug=no'`" -o build/G15Manager.exe .\cmd\manager"
 Invoke-Expression $BUILD
 
 Write-Host "Building debug release"
 
-$BUILD_DEBUG = "go build -gcflags=`"-N -l`" -ldflags=`"-X 'main.Version=$LatestTag-debug' -X 'main.IsDebug=yes'`" -o build/G14Manager.debug.exe .\cmd\manager"
+$BUILD_DEBUG = "go build -gcflags=`"-N -l`" -ldflags=`"-X 'main.Version=$LatestTag-debug' -X 'main.IsDebug=yes'`" -o build/G15Manager.debug.exe .\cmd\manager"
 Invoke-Expression $BUILD_DEBUG
 
 Write-Host "Building DLLs"

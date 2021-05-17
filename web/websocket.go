@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/NeilSeligmann/G15Manager/controller"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/zllovesuki/G14Manager/controller"
 )
 
 const (

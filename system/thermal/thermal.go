@@ -22,12 +22,12 @@ import (
 	"sync"
 	"time"
 
-	// "github.com/zllovesuki/G14Manager/rpc/announcement"
+	// "github.com/NeilSeligmann/G15Manager/rpc/announcement"
+	"github.com/NeilSeligmann/G15Manager/system/atkacpi"
+	"github.com/NeilSeligmann/G15Manager/system/plugin"
+	"github.com/NeilSeligmann/G15Manager/system/power"
+	"github.com/NeilSeligmann/G15Manager/util"
 	"github.com/gin-gonic/gin"
-	"github.com/zllovesuki/G14Manager/system/atkacpi"
-	"github.com/zllovesuki/G14Manager/system/plugin"
-	"github.com/zllovesuki/G14Manager/system/power"
-	"github.com/zllovesuki/G14Manager/util"
 )
 
 const (

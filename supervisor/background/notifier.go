@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/zllovesuki/G14Manager/cxx/osd"
-	"github.com/zllovesuki/G14Manager/util"
+	"github.com/NeilSeligmann/G15Manager/cxx/osd"
+	"github.com/NeilSeligmann/G15Manager/util"
 )
 
 const (

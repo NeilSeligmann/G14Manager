@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/Masterminds/semver"
-	"github.com/zllovesuki/G14Manager/util"
+	"github.com/NeilSeligmann/G15Manager/util"
 )
 
 type VersionChecker struct {
@@ -74,7 +74,7 @@ func (v *VersionChecker) Serve(haltCtx context.Context) error {
 			if latest.GreaterThan(v.current) {
 				log.Printf("[VersionChecker] new version found: %s\n", latest.String())
 				v.notifier <- util.Notification{
-					Message: fmt.Sprintf("A new version of G14Manager is available: %s", latest.String()),
+					Message: fmt.Sprintf("A new version of G15Manager is available: %s", latest.String()),
 				}
 			}
 		}

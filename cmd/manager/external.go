@@ -9,7 +9,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 
-	"github.com/zllovesuki/G14Manager/system/shared"
+	"github.com/NeilSeligmann/G15Manager/system/shared"
 
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	suture "github.com/thejerf/suture/v4"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/zllovesuki/G14Manager/util"
+	"github.com/NeilSeligmann/G15Manager/util"
 
 	"github.com/thejerf/suture/v4"
 )

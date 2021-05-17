@@ -3,8 +3,8 @@ package web
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/zllovesuki/G14Manager/controller"
-	"github.com/zllovesuki/G14Manager/cxx/plugin/keyboard"
+	"github.com/NeilSeligmann/G15Manager/controller"
+	"github.com/NeilSeligmann/G15Manager/cxx/plugin/keyboard"
 )
 
 func NewHttpServer(dep *controller.Dependencies) *gin.Engine {

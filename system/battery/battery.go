@@ -5,8 +5,8 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/zllovesuki/G14Manager/system/atkacpi"
-	"github.com/zllovesuki/G14Manager/system/persist"
+	"github.com/NeilSeligmann/G15Manager/system/atkacpi"
+	"github.com/NeilSeligmann/G15Manager/system/persist"
 )
 
 const (

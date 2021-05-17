@@ -8,14 +8,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/NeilSeligmann/G15Manager/controller"
+	"github.com/NeilSeligmann/G15Manager/web"
 	suture "github.com/thejerf/suture/v4"
-	"github.com/zllovesuki/G14Manager/controller"
-	"github.com/zllovesuki/G14Manager/web"
 
-	// "github.com/zllovesuki/G14Manager/rpc/server"
+	// "github.com/NeilSeligmann/G15Manager/rpc/server"
 
-	"github.com/zllovesuki/G14Manager/supervisor/background"
-	"github.com/zllovesuki/G14Manager/util"
+	"github.com/NeilSeligmann/G15Manager/supervisor/background"
+	"github.com/NeilSeligmann/G15Manager/util"
 
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -24,7 +24,7 @@ import (
 var (
 	Version     = "v0.0.0-dev"
 	IsDebug     = "yes"
-	logLocation = `C:\Logs\G14Manager.log`
+	logLocation = `C:\Logs\G15Manager.log`
 )
 
 func main() {
@@ -43,7 +43,7 @@ func main() {
 
 	notifier := background.NewNotifier()
 
-	// versionChecker, err := background.NewVersionCheck(Version, "zllovesuki/G14Manager", notifier.C)
+	// versionChecker, err := background.NewVersionCheck(Version, "zllovesuki/G15Manager", notifier.C)
 	// if err != nil {
 	// 	log.Fatalf("[supervisor] cannot get version checker")
 	// }
@@ -140,7 +140,7 @@ func main() {
 
 	go func() {
 		notifier.C <- util.Notification{
-			Message:   "Starting up G14Manager Supervisor",
+			Message:   "Starting up G15Manager Supervisor",
 			Immediate: true,
 			Delay:     time.Second * 2,
 		}
