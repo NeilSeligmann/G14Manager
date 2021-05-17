@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/zllovesuki/G14Manager/controller"
 )
 
 const (
@@ -33,29 +34,44 @@ var upgrader = websocket.Upgrader{
 	},
 } // use default options
 
-// test 123
+// func ping(ws *websocket.Conn, done chan struct{}) {
+// 	ticker := time.NewTicker(pingPeriod)
+// 	defer ticker.Stop()
+// 	for {
+// 		select {
+// 		case <-ticker.C:
+// 			if err := ws.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(writeWait)); err != nil {
+// 				log.Println("ping:", err)
+// 			}
+// 		case <-done:
+// 			return
+// 		}
+// 	}
+// }
 
-func ping(ws *websocket.Conn, done chan struct{}) {
-	ticker := time.NewTicker(pingPeriod)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-ticker.C:
-			if err := ws.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(writeWait)); err != nil {
-				log.Println("ping:", err)
-			}
-		case <-done:
-			return
-		}
+type SocketInstance struct {
+	Context        *gin.Context
+	Dependencies   *controller.Dependencies
+	ShouldSendInfo bool
+}
+
+func NewSocketInstance(c *gin.Context, dep *controller.Dependencies) SocketInstance {
+	instance := SocketInstance{
+		Context:        c,
+		Dependencies:   dep,
+		ShouldSendInfo: true,
 	}
+
+	return instance
 }
 
 type SocketMessage struct {
-	Action int    `json:"action"`
-	Value  string `json:"value"`
+	Category int    `json:"category"`
+	Action   int    `json:"action"`
+	Value    string `json:"value"`
 }
 
-func socketHandler(c *gin.Context) {
+func (inst *SocketInstance) handleSocket(c *gin.Context) {
 	//Upgrade get request to webSocket protocol
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -66,21 +82,23 @@ func socketHandler(c *gin.Context) {
 
 	// The event loop
 	for {
+		if inst.ShouldSendInfo {
+			inst.ShouldSendInfo = false
+			inst.sendInfo(ws)
+		}
+
 		messageType, message, err := ws.ReadMessage()
 		if err != nil {
 			log.Println("Error during message reading:", err)
 			break
 		}
 
-		// go func() {
-		processMessage(ws, messageType, message)
-		// }()
+		inst.processMessage(ws, messageType, message)
 	}
 }
 
-func processMessage(ws *websocket.Conn, messageType int, message []byte) {
-	if string(message) == "heartbeat" {
-		// err = ws.WriteMessage(websocket.TextMessage, []byte("alive"))
+func (inst *SocketInstance) processMessage(ws *websocket.Conn, messageType int, message []byte) {
+	if string(message) == "hb" {
 		err := ws.WriteMessage(messageType, []byte("alive"))
 		if err != nil {
 			log.Println("Error responding to heartbeat:", err)
@@ -104,9 +122,27 @@ func processMessage(ws *websocket.Conn, messageType int, message []byte) {
 	log.Printf("decodedMessage")
 	log.Print(decodedMessage)
 
-	// err = ws.WriteMessage(messageType, message)
-	// if err != nil {
-	// 	log.Println("Error during message writing:", err)
-	// 	break
-	// }
+	switch decodedMessage.Action {
+	// Info
+	case 0:
+		inst.sendInfo(ws)
+	}
+}
+
+func (inst *SocketInstance) sendInfo(ws *websocket.Conn) {
+	sendJSON(ws, gin.H{
+		"action": 0,
+		"data": gin.H{
+			"thermal": inst.Dependencies.Thermal.GetWSInfo(),
+		},
+	})
+}
+
+func sendJSON(ws *websocket.Conn, v interface{}) {
+	err := ws.WriteJSON(v)
+
+	if err != nil {
+		log.Printf("Failed to send JSON message!")
+		log.Print(v)
+	}
 }

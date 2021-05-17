@@ -23,6 +23,7 @@ import (
 	"time"
 
 	// "github.com/zllovesuki/G14Manager/rpc/announcement"
+	"github.com/gin-gonic/gin"
 	"github.com/zllovesuki/G14Manager/system/atkacpi"
 	"github.com/zllovesuki/G14Manager/system/plugin"
 	"github.com/zllovesuki/G14Manager/system/power"
@@ -42,13 +43,6 @@ const (
 
 // Profile contain each thermal profile definition
 // TODO: Revisit this
-type Profile struct {
-	Name             string
-	WindowsPowerPlan string
-	ThrottlePlan     uint32
-	CPUFanCurve      *FanTable
-	GPUFanCurve      *FanTable
-}
 
 // Control defines contains the Windows Power Option and list of thermal profiles
 type Control struct {
@@ -310,6 +304,15 @@ func (c *Control) Notify(t plugin.Notification) {
 
 func (c *Control) Name() string {
 	return persistKey
+}
+
+func (c *Control) GetWSInfo() gin.H {
+	return gin.H{
+		"profiles": gin.H{
+			"current":   c.CurrentProfile(),
+			"available": c.Profiles,
+		},
+	}
 }
 
 // func (c *Control) ConfigUpdate(u announcement.Update) {

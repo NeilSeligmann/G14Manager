@@ -13,6 +13,14 @@ var (
 	curveRe = regexp.MustCompile(`\s*(\d{1,3})c:(\d{1,3})%\s*`)
 )
 
+// type Marshaler interface {
+// 	MarshalJSON() ([]byte, error)
+// }
+
+type TextMarshaler interface {
+	MarshalText() (text []byte, err error)
+}
+
 type FanTable struct {
 	ByteTable []byte
 }
@@ -84,4 +92,8 @@ func (f *FanTable) String() string {
 		b[7],
 		b[15],
 	)
+}
+
+func (f *FanTable) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + f.String() + `"`), nil
 }

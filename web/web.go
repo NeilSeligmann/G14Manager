@@ -32,7 +32,11 @@ func NewHttpServer(dep *controller.Dependencies) *gin.Engine {
 		})
 
 		// Web Socket
-		v1.GET("/websocket", socketHandler)
+		v1.GET("/websocket", func(c *gin.Context) {
+			instance := NewSocketInstance(c, dep)
+
+			instance.handleSocket(c)
+		})
 
 		// Keyboard Routes
 		kb := v1.Group("/keyboard")
