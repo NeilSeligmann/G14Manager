@@ -359,8 +359,6 @@ func (c *Control) Load(v []byte) error {
 
 // Apply satisfies persist.Registry
 func (c *Control) Apply() error {
-	log.Printf("Reg Apply!")
-
 	_, err := c.setProfile(c.PersistConfig.CurrentProfile)
 	return err
 }
