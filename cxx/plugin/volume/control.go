@@ -15,6 +15,7 @@ import (
 	"github.com/NeilSeligmann/G15Manager/system/keyboard"
 	"github.com/NeilSeligmann/G15Manager/system/plugin"
 	"github.com/NeilSeligmann/G15Manager/util"
+	"github.com/gin-gonic/gin"
 )
 
 type Control struct {
@@ -150,5 +151,11 @@ func (c *Control) ToggleMuted() error {
 	default:
 		c.isMuted = !c.isMuted
 		return nil
+	}
+}
+
+func (c *Control) GetWSInfo() gin.H {
+	return gin.H{
+		"isMuted": c.isMuted,
 	}
 }

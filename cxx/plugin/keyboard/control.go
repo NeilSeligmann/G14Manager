@@ -22,6 +22,7 @@ import (
 	"log"
 	"os/exec"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -35,6 +36,8 @@ import (
 	"github.com/NeilSeligmann/G15Manager/system/persist"
 	"github.com/NeilSeligmann/G15Manager/system/plugin"
 	"github.com/NeilSeligmann/G15Manager/util"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/micmonay/keybd_event"
 
 	"github.com/karalabe/usb"
@@ -441,4 +444,25 @@ func run(commands ...string) error {
 	cmd := exec.Command(commands[0], commands[1:]...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{CreationFlags: 0x08000000}
 	return cmd.Start()
+}
+
+func (c *Control) GetWSInfo() gin.H {
+	return gin.H{
+		"currentBrightness": Level(c.Config.BrightnessLevel),
+		"rogKey":            c.Config.RogKey,
+	}
+}
+
+func (c *Control) HandleWSMessage(ws *websocket.Conn, action int, value string) {
+	fmt.Printf("HandleWSMessage - Keyboard")
+	switch action {
+	// Brightness
+	case 0:
+		i, _ := strconv.Atoi(value)
+		c.SetBrightness(Level(i))
+	// Rog Key
+	case 1:
+		arr := strings.Split(value, ",")
+		c.Config.RogKey = arr
+	}
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/NeilSeligmann/G15Manager/system/atkacpi"
 	"github.com/NeilSeligmann/G15Manager/system/persist"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -96,4 +97,10 @@ func (c *ChargeLimit) Close() error {
 	defer c.mu.Unlock()
 
 	return c.wmi.Close()
+}
+
+func (c *ChargeLimit) GetWSInfo() gin.H {
+	return gin.H{
+		"currentLimit": c.currentLimit,
+	}
 }

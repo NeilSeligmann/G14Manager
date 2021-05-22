@@ -122,7 +122,27 @@ func (inst *SocketInstance) processMessage(ws *websocket.Conn, messageType int, 
 	log.Printf("decodedMessage")
 	log.Print(decodedMessage)
 
-	switch decodedMessage.Action {
+	switch decodedMessage.Category {
+	// Info
+	case 0:
+		inst.handleSystemMessage(ws, decodedMessage.Action, decodedMessage.Value)
+	// Thermal
+	case 1:
+		inst.Dependencies.Thermal.HandleWSMessage(ws, decodedMessage.Action, decodedMessage.Value)
+	// Keyboard
+	case 2:
+		inst.Dependencies.Keyboard.HandleWSMessage(ws, decodedMessage.Action, decodedMessage.Value)
+	}
+
+	// Save config
+	inst.Dependencies.ConfigRegistry.Save()
+
+	// Send update info
+	inst.sendInfo(ws)
+}
+
+func (inst *SocketInstance) handleSystemMessage(ws *websocket.Conn, action int, value string) {
+	switch action {
 	// Info
 	case 0:
 		inst.sendInfo(ws)
@@ -133,7 +153,11 @@ func (inst *SocketInstance) sendInfo(ws *websocket.Conn) {
 	sendJSON(ws, gin.H{
 		"action": 0,
 		"data": gin.H{
-			"thermal": inst.Dependencies.Thermal.GetWSInfo(),
+			"thermal":  inst.Dependencies.Thermal.GetWSInfo(),
+			"keyboard": inst.Dependencies.Keyboard.GetWSInfo(),
+			"volume":   inst.Dependencies.Volume.GetWSInfo(),
+			"rr":       inst.Dependencies.RR.GetWSInfo(),
+			"battery":  inst.Dependencies.Battery.GetWSInfo(),
 		},
 	})
 }

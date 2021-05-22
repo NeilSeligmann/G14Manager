@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"sync"
 	"time"
 
@@ -29,6 +30,7 @@ import (
 	"github.com/NeilSeligmann/G15Manager/system/power"
 	"github.com/NeilSeligmann/G15Manager/util"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 const (
@@ -162,6 +164,27 @@ func (c *Control) NextProfile(howMany int) (string, error) {
 	defer c.mu.Unlock()
 
 	nextIndex := (c.currentProfileIndex + howMany) % len(c.Config.Profiles)
+
+	skippedProfiles := 0
+	for {
+		nextProfile := c.Config.Profiles[nextIndex+skippedProfiles]
+
+		// If we skipped too many times, break the loop
+		if skippedProfiles > len(c.Config.Profiles) {
+			break
+		}
+
+		// Check if next profile can be fast switched
+		if nextProfile.FastSwitch {
+			break
+		}
+
+		// Skip profile due to fast switch being disabled
+		skippedProfiles += 1
+
+		// Set next index
+		nextIndex = (c.currentProfileIndex + howMany + skippedProfiles) % len(c.Config.Profiles)
+	}
 
 	return c.setProfile(nextIndex)
 }
@@ -314,7 +337,7 @@ func (c *Control) Notify(t plugin.Notification) {
 func (c *Control) GetWSInfo() gin.H {
 	return gin.H{
 		"profiles": gin.H{
-			"current":   c.CurrentProfile(),
+			"current":   c.currentProfileIndex,
 			"available": c.Profiles,
 		},
 	}
@@ -369,6 +392,74 @@ func (c *Control) Close() error {
 	defer c.mu.Unlock()
 
 	return nil
+}
+
+func (c *Control) HandleWSMessage(ws *websocket.Conn, action int, value string) {
+	fmt.Printf("HandleWSMessage - Thermal")
+	switch action {
+	// Set Profile
+	case 0:
+		i, _ := strconv.Atoi(value)
+		c.setProfile(i)
+	// Add/Modify Profile
+	case 1:
+		modifyInput := ModifyProfileStruct{}
+		json.Unmarshal([]byte(value), &modifyInput)
+		c.AddOrModifyProfile(&modifyInput)
+	// Remove Profile
+	case 2:
+		i, _ := strconv.Atoi(value)
+		c.RemoveProfile(i)
+	// Reset Profiles
+	case 3:
+		c.ResetProfiles()
+	}
+}
+
+func (c *Control) AddOrModifyProfile(modifyProfile *ModifyProfileStruct) {
+	addProfile := false
+
+	if modifyProfile.ProfileId == -1 {
+		addProfile = true
+	} else if modifyProfile.ProfileId > len(c.Config.Profiles)-1 {
+		return
+	}
+
+	// Get profile
+	profile := Profile{}
+	if !addProfile {
+		profile = c.Config.Profiles[modifyProfile.ProfileId]
+	}
+
+	// Modify profile
+	profile.Name = modifyProfile.Name
+	profile.WindowsPowerPlan = modifyProfile.WindowsPowerPlan
+	profile.ThrottlePlan = modifyProfile.ThrottlePlan
+	profile.FastSwitch = modifyProfile.FastSwitch
+
+	// Set Fan Tables
+	cpuTable, _ := NewFanTable(modifyProfile.CPUFanCurve)
+	gpuTable, _ := NewFanTable(modifyProfile.GPUFanCurve)
+
+	profile.CPUFanCurve = cpuTable
+	profile.GPUFanCurve = gpuTable
+
+	// Save profile
+	if addProfile {
+		// Insert new profile
+		c.Config.Profiles = append(c.Config.Profiles, profile)
+	} else {
+		// Modify existing profile
+		c.Config.Profiles[modifyProfile.ProfileId] = profile
+	}
+}
+
+func (c *Control) RemoveProfile(profileId int) {
+	c.Config.Profiles = append(c.Config.Profiles[:profileId], c.Config.Profiles[profileId+1:]...)
+}
+
+func (c *Control) ResetProfiles() {
+	c.Config.Profiles = GetDefaultThermalProfiles()
 }
 
 // func (c *Control) ConfigUpdate(u announcement.Update) {

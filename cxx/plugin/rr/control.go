@@ -10,6 +10,7 @@ import (
 	"github.com/NeilSeligmann/G15Manager/cxx/rr"
 	"github.com/NeilSeligmann/G15Manager/system/plugin"
 	"github.com/NeilSeligmann/G15Manager/util"
+	"github.com/gin-gonic/gin"
 )
 
 type Control struct {
@@ -129,4 +130,10 @@ func (c *Control) Notify(t plugin.Notification) {
 	}
 
 	c.queue <- t
+}
+
+func (c *Control) GetWSInfo() gin.H {
+	return gin.H{
+		"currentRefreshRate": c.pDisplay.GetCurrent(),
+	}
 }
