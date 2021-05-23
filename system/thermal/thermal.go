@@ -167,10 +167,11 @@ func (c *Control) NextProfile(howMany int) (string, error) {
 
 	skippedProfiles := 0
 	for {
-		nextProfile := c.Config.Profiles[nextIndex+skippedProfiles]
+		nextProfile := c.Config.Profiles[nextIndex]
 
 		// If we skipped too many times, break the loop
 		if skippedProfiles > len(c.Config.Profiles) {
+			nextIndex = c.currentProfileIndex
 			break
 		}
 
