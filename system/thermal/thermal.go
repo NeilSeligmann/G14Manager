@@ -73,7 +73,8 @@ type Config struct {
 }
 
 type PersistConfig struct {
-	CurrentProfile int `json:currentProfile`
+	CurrentProfile int       `json:"currentProfile"`
+	SavedProfiles  []Profile `json:"profiles"`
 }
 
 var _ plugin.Plugin = &Control{}
@@ -206,7 +207,6 @@ func (c *Control) setThrottlePlan(profile Profile) error {
 }
 
 func (c *Control) setFanCurve(profile Profile) error {
-
 	if profile.CPUFanCurve != nil {
 		cpuFanCurve := profile.CPUFanCurve.Bytes()
 
@@ -356,6 +356,7 @@ func (c *Control) Value() []byte {
 
 	// Set persist config data
 	c.PersistConfig.CurrentProfile = c.currentProfileIndex
+	c.PersistConfig.SavedProfiles = c.Profiles
 
 	file, _ := json.MarshalIndent(c.PersistConfig, "", "")
 	return file
@@ -383,7 +384,14 @@ func (c *Control) Load(v []byte) error {
 
 // Apply satisfies persist.Registry
 func (c *Control) Apply() error {
+	// Load profiles
+	// if len(c.PersistConfig.SavedProfiles) > 0 && c.PersistConfig.SavedProfiles != nil {
+	// 	c.Profiles = c.PersistConfig.SavedProfiles
+	// }
+
+	// Set current profile
 	_, err := c.setProfile(c.PersistConfig.CurrentProfile)
+
 	return err
 }
 

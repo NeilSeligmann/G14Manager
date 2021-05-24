@@ -62,6 +62,7 @@ func GetDefaultThermalProfiles() []Profile {
 			FastSwitch:       false,
 		},
 	}
+
 	for _, d := range defaults {
 		var cpuTable, gpuTable *FanTable
 		var err error
@@ -69,6 +70,7 @@ func GetDefaultThermalProfiles() []Profile {
 			Name:             d.name,
 			ThrottlePlan:     d.throttlePlan,
 			WindowsPowerPlan: d.windowsPowerPlan,
+			FastSwitch:       d.FastSwitch,
 		}
 
 		if d.cpuFanCurve != "" {
