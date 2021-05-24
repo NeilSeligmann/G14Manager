@@ -11,14 +11,16 @@ Project forked from: [G14Manager](https://github.com/zllovesuki/G14Manager)
 The project is currently under development.
 Most of the current features come from the original [G14Manager](https://github.com/zllovesuki/G14Manager)
 
+For a more advanced configuration, you will [need a client](https://github.com/NeilSeligmann/G15Manager-client).
+
 Current Features:
 1. Toggle microphone mute/unmute
 2. Toggle touchpad
-2. Keyboard brightness adjustment
-3. Thermal profile switching
-4. Fan curve control
-5. On-screen display
-6. (WIP) Web client
+3. Keyboard brightness adjustment
+4. Thermal profile switching
+5. Fan curve control
+6. On-screen display
+7. Web Socket API
 
 _Note_: Currently, the default profiles expect Power Plans "High Performance" and "Balanced" to be available. If your installation of Windows does not have those Power Plans, G15Manager will refuse to start. This will be fixed when customizable config is released.
 
