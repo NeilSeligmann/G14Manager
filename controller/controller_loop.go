@@ -198,6 +198,9 @@ func (c *Controller) handleWorkQueue(haltCtx context.Context) {
 				return
 			}
 
+		case <-c.workQueueCh[fnBroadcastClients].clean:
+			c.Config.Registry.ClientCallback()
+
 		case ev := <-c.workQueueCh[fnHwCtrl].clean:
 			keyCode := ev.Data.(uint32)
 			args := make([]byte, 8)
@@ -244,6 +247,7 @@ func (c *Controller) handlePluginCallback(haltCtx context.Context) {
 			switch t.Event {
 			case plugin.CbPersistConfig:
 				c.workQueueCh[fnPersistConfigs].noisy <- struct{}{}
+				c.workQueueCh[fnBroadcastClients].noisy <- struct{}{}
 			case plugin.CbNotifyToast:
 				if n, ok := t.Value.(util.Notification); ok {
 					c.Config.Notifier <- n

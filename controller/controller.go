@@ -31,6 +31,7 @@ const (
 	fnUtilityKey            // for when ROG Key is pressed
 	fnThermalProfile        // for Fn+F5 to switch between profiles
 	fnAutoThermal           // for switching thermal on power source change
+	fnBroadcastClients
 )
 
 type chargerStatus int
@@ -121,6 +122,7 @@ func (c *Controller) initialize(haltCtx context.Context) error {
 		fnHwCtrl,
 		fnBeforeSuspend,
 		fnAfterSuspend,
+		fnBroadcastClients,
 	}
 	for _, work := range workQueueImmediate {
 		in, out := util.PassThrough(haltCtx)

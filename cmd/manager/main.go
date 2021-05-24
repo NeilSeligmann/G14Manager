@@ -120,10 +120,10 @@ func main() {
 	// ------------
 	// Web Server
 	// ------------
-	web.NewHttpServer(dep)
-	// if err != nil {
-	// 	log.Fatalf("[supervisor] failed to create HTTP web server: %+v\n", err)
-	// }
+	webServerInstance := web.NewWebServer(dep)
+	dep.ConfigRegistry.SetClientCallback(func() {
+		webServerInstance.BroadcastInfo()
+	})
 
 	// ------------
 	// Supervisors

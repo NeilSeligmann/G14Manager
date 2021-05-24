@@ -20,6 +20,7 @@ type RegistryConfigHelper struct {
 	configs       map[string]Registry
 	key           registry.Key
 	path          string
+	saveCallback  func()
 }
 
 var _ ConfigRegistry = &RegistryConfigHelper{}
@@ -98,6 +99,10 @@ func (h *RegistryConfigHelper) Save() error {
 		}
 	}
 
+	if h.saveCallback != nil {
+		h.saveCallback()
+	}
+
 	return nil
 }
 
@@ -135,5 +140,15 @@ func (h *RegistryConfigHelper) Close() {
 		if err != nil {
 			log.Printf("persist: error closing \"%s\": %s\n", config.Name(), err)
 		}
+	}
+}
+
+func (h *RegistryConfigHelper) SetClientCallback(cb func()) {
+	h.saveCallback = cb
+}
+
+func (h *RegistryConfigHelper) ClientCallback() {
+	if h.saveCallback != nil {
+		h.saveCallback()
 	}
 }

@@ -26,4 +26,9 @@ type ConfigRegistry interface {
 	Apply() error
 	// Close should instruct each Registry to close/clean up
 	Close()
+
+	// Set client callback
+	SetClientCallback(cb func())
+	// Call client callback
+	ClientCallback()
 }
