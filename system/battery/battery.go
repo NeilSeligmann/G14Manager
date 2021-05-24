@@ -3,11 +3,13 @@ package battery
 import (
 	"encoding/binary"
 	"errors"
+	"strconv"
 	"sync"
 
 	"github.com/NeilSeligmann/G15Manager/system/atkacpi"
 	"github.com/NeilSeligmann/G15Manager/system/persist"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 const (
@@ -102,5 +104,14 @@ func (c *ChargeLimit) Close() error {
 func (c *ChargeLimit) GetWSInfo() gin.H {
 	return gin.H{
 		"currentLimit": c.currentLimit,
+	}
+}
+
+func (c *ChargeLimit) HandleWSMessage(ws *websocket.Conn, action int, value string) {
+	switch action {
+	// Limit
+	case 0:
+		i, _ := strconv.ParseUint(value, 10, 64)
+		c.Set(uint8(i))
 	}
 }

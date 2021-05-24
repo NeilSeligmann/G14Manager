@@ -248,6 +248,8 @@ func (c *Controller) handlePluginCallback(haltCtx context.Context) {
 			case plugin.CbPersistConfig:
 				c.workQueueCh[fnPersistConfigs].noisy <- struct{}{}
 				c.workQueueCh[fnBroadcastClients].noisy <- struct{}{}
+			case plugin.CbNotifyClients:
+				c.workQueueCh[fnBroadcastClients].noisy <- struct{}{}
 			case plugin.CbNotifyToast:
 				if n, ok := t.Value.(util.Notification); ok {
 					c.Config.Notifier <- n

@@ -18,6 +18,7 @@ const (
 
 	CbPersistConfig
 	CbNotifyToast
+	CbNotifyClients
 )
 
 func (e Event) String() string {
@@ -35,5 +36,6 @@ func (e Event) String() string {
 
 		"Callback: Request to persist config",
 		"Callback: Request to notify user",
+		"Callback: Request to notify clients",
 	}[e]
 }

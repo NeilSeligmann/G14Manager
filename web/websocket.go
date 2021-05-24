@@ -117,7 +117,7 @@ func (inst *SocketInstance) processMessage(messageType int, message []byte) {
 		return
 	}
 
-	log.Printf("Received: %s", message)
+	// log.Printf("Received: %s", message)
 
 	decodedMessage := SocketMessage{}
 
@@ -129,8 +129,8 @@ func (inst *SocketInstance) processMessage(messageType int, message []byte) {
 		}
 	}
 
-	log.Printf("decodedMessage")
-	log.Print(decodedMessage)
+	// log.Printf("decodedMessage")
+	// log.Print(decodedMessage)
 
 	switch decodedMessage.Category {
 	// Info
@@ -142,6 +142,15 @@ func (inst *SocketInstance) processMessage(messageType int, message []byte) {
 	// Keyboard
 	case 2:
 		inst.Dependencies.Keyboard.HandleWSMessage(inst.ws, decodedMessage.Action, decodedMessage.Value)
+	// Battery
+	case 3:
+		inst.Dependencies.Battery.HandleWSMessage(inst.ws, decodedMessage.Action, decodedMessage.Value)
+	// RR
+	case 4:
+		inst.Dependencies.RR.HandleWSMessage(inst.ws, decodedMessage.Action, decodedMessage.Value)
+	// Volume
+	case 5:
+		inst.Dependencies.Volume.HandleWSMessage(inst.ws, decodedMessage.Action, decodedMessage.Value)
 	}
 
 	// Save config

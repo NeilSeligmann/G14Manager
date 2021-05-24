@@ -11,6 +11,7 @@ import (
 	"github.com/NeilSeligmann/G15Manager/system/plugin"
 	"github.com/NeilSeligmann/G15Manager/util"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 type Control struct {
@@ -135,5 +136,13 @@ func (c *Control) Notify(t plugin.Notification) {
 func (c *Control) GetWSInfo() gin.H {
 	return gin.H{
 		"currentRefreshRate": c.pDisplay.GetCurrent(),
+	}
+}
+
+func (c *Control) HandleWSMessage(ws *websocket.Conn, action int, value string) {
+	switch action {
+	// Cycle RR
+	case 0:
+		c.pDisplay.CycleRefreshRate()
 	}
 }

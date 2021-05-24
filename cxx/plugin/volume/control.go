@@ -16,6 +16,7 @@ import (
 	"github.com/NeilSeligmann/G15Manager/system/plugin"
 	"github.com/NeilSeligmann/G15Manager/util"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 type Control struct {
@@ -75,6 +76,9 @@ func (c *Control) loop(haltCtx context.Context, cb chan<- plugin.Callback) {
 				cb <- plugin.Callback{
 					Event: plugin.CbNotifyToast,
 					Value: n,
+				}
+				cb <- plugin.Callback{
+					Event: plugin.CbNotifyClients,
 				}
 				c.errChan <- c.ToggleMuted()
 			}
@@ -143,6 +147,7 @@ func (c *Control) ToggleMuted() error {
 	if !c.isMuted {
 		to = 1
 	}
+
 	log.Printf("volCtrl: setting microphone mute to %t\n", to == 1)
 	ret := C.SetMicrophoneMute(0, C.int(to))
 	switch ret {
@@ -157,5 +162,13 @@ func (c *Control) ToggleMuted() error {
 func (c *Control) GetWSInfo() gin.H {
 	return gin.H{
 		"isMuted": c.isMuted,
+	}
+}
+
+func (c *Control) HandleWSMessage(ws *websocket.Conn, action int, value string) {
+	switch action {
+	// Toggle Mic
+	case 0:
+		c.ToggleMuted()
 	}
 }
