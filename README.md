@@ -31,19 +31,23 @@ If your encounter an issue with using G15Manager (e.g. does not start, functiona
 
 ## Requirements
 
-You must have a Zephyrus G15, and has Asus Optimization the driver (aka `atkwmiacpi64`) installed. You may check and see if `C:\Windows\System32\DriverStore\FileRepository\asussci2.inf_amd64_xxxxxxxxxxxxxxxx` exists.
+- A Zephyrus G15
+- Asus Optimization installed
+
+``Asus Optimization`` provides the necessary drivers (aka `atkwmiacpi64`). You may check and see if `C:\Windows\System32\DriverStore\FileRepository\asussci2.inf_amd64_xxxxxxxxxxxxxxxx` exists.
 
 G15Manager will most probably not work on other Zephyrus variants. If you have a G14 use [this manager instead](https://github.com/zllovesuki/G15Manager).
 
-Tested G15 Models:
+Tested Zephyrus G15 Models:
 - G503QR
 
-Asus Optimization (the service) **cannot** be running, otherwise G15Manager and Asus Optimization will be fighting over control. We only need Asus Optimization (the driver) to be installed so Windows will load `atkwmiacpi64.sys`, and exposes a `\\.\ATKACPI` device to be used.
+Asus Optimization (the service) **cannot** be running, otherwise G15Manager and Asus Optimization will be fighting over control. We only need Asus Optimization (the driver) to be installed so Windows will load `atkwmiacpi64.sys`, and thus expose a `\\.\ATKACPI` device to be used.
 
 You do not need any other software from Asus (e.g. Armoury Crate and its cousins, etc) running to use G15Manager; you can safely uninstall them from your system. However, some software (e.g. Asus Optimization) are installed as Windows Services, and you should disable them in Services as they would not provide any value:
 
 ![Running Services](images/services.png)
 
+>In order to use the De-Noising AI, you must keep the folder ``DenoiseAIPlugin`` from Armoury Crate, then point the G15Manager to the executable ``ArmouryCrate.DenoiseAI.exe`` inside that folder.
 ### Technical Notes
 
 "ASUS System Control Interface V2" exists as a placeholder so Asus Optimization can have a device "attached" to it, and loads `atkwmiacpi64.sys`. The hardware for ASCI is a stud in the DSDT table.
