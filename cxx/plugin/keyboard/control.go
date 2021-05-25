@@ -464,5 +464,8 @@ func (c *Control) HandleWSMessage(ws *websocket.Conn, action int, value string) 
 	case 1:
 		arr := strings.Split(value, ",")
 		c.Config.RogKey = arr
+	// Toggle Touchpad
+	case 2:
+		c.ToggleTouchPad()
 	}
 }
