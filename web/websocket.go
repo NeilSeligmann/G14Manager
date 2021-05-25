@@ -151,6 +151,9 @@ func (inst *SocketInstance) processMessage(messageType int, message []byte) {
 	// Volume
 	case 5:
 		inst.Dependencies.Volume.HandleWSMessage(inst.ws, decodedMessage.Action, decodedMessage.Value)
+	// Denoise AI
+	case 6:
+		inst.Dependencies.AIDenoise.HandleWSMessage(inst.ws, decodedMessage.Action, decodedMessage.Value)
 	}
 
 	// Save config
@@ -177,6 +180,7 @@ func (inst *SocketInstance) SendInfo() {
 			"volume":   inst.Dependencies.Volume.GetWSInfo(),
 			"rr":       inst.Dependencies.RR.GetWSInfo(),
 			"battery":  inst.Dependencies.Battery.GetWSInfo(),
+			"denoise":  inst.Dependencies.AIDenoise.GetWSInfo(),
 		},
 	})
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/NeilSeligmann/G15Manager/system/keyboard"
 	"github.com/NeilSeligmann/G15Manager/system/plugin"
 	"github.com/NeilSeligmann/G15Manager/util"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
@@ -150,6 +151,7 @@ func (c *Control) ToggleMuted() error {
 
 	log.Printf("volCtrl: setting microphone mute to %t\n", to == 1)
 	ret := C.SetMicrophoneMute(0, C.int(to))
+
 	switch ret {
 	case -1:
 		return fmt.Errorf("Cannot set microphone muted status")

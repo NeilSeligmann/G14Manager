@@ -14,6 +14,7 @@ require (
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/improbable-eng/grpc-web v0.14.0 // indirect
+	github.com/itchyny/volume-go v0.2.1 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9
 	github.com/kr/pretty v0.1.0 // indirect

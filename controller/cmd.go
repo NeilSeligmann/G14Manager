@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 
+	"github.com/NeilSeligmann/G15Manager/cxx/plugin/aidenoise"
 	"github.com/NeilSeligmann/G15Manager/cxx/plugin/gpu"
 	"github.com/NeilSeligmann/G15Manager/cxx/plugin/keyboard"
 	"github.com/NeilSeligmann/G15Manager/cxx/plugin/rr"
@@ -34,6 +35,7 @@ type Dependencies struct {
 	Thermal        *thermal.Control
 	GPU            *gpu.Control
 	RR             *rr.Control
+	AIDenoise      *aidenoise.Control
 	ConfigRegistry persist.ConfigRegistry
 	// Updatable      []announcement.Updatable
 }
@@ -98,9 +100,15 @@ func GetDependencies(conf RunConfig) (*Dependencies, error) {
 		return nil, err
 	}
 
+	aiDenoiseCtrl, err := aidenoise.NewAIDenoise(conf.DryRun)
+	if err != nil {
+		return nil, err
+	}
+
 	config.Register(battery)
 	config.Register(kbCtrl)
 	config.Register(thermal)
+	config.Register(aiDenoiseCtrl)
 
 	// updatable := []announcement.Updatable{
 	// 	thermal,
@@ -115,6 +123,7 @@ func GetDependencies(conf RunConfig) (*Dependencies, error) {
 		Thermal:        thermal,
 		GPU:            gpuCtrl,
 		RR:             rrCtrl,
+		AIDenoise:      aiDenoiseCtrl,
 		ConfigRegistry: config,
 		// Updatable:      updatable,
 	}, nil
@@ -147,6 +156,7 @@ func New(conf RunConfig, dep *Dependencies) (*Controller, chan error, error) {
 				dep.Thermal,
 				dep.GPU,
 				dep.RR,
+				dep.AIDenoise,
 			},
 			Registry: dep.ConfigRegistry,
 
