@@ -21,7 +21,7 @@ Current Features:
 5. Fan curve control
 6. On-screen display
 7. Web Socket API
-8. Armoury Crate De-Noising AI (Armoury Crate files are required)
+8. De-Noising AI (Armoury Crate files are required)
 
 _Note_: Currently, the default profiles expect Power Plans "High Performance" and "Balanced" to be available. If your installation of Windows does not have those Power Plans, G15Manager will refuse to start. This will be fixed when customizable config is released.
 
