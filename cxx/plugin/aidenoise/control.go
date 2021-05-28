@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+
+	// "syscall"
 	"time"
 
 	"github.com/NeilSeligmann/G15Manager/system/plugin"
@@ -57,7 +59,8 @@ func defaultConfig() *AINoiseConfig {
 
 // Initialize satisfies system/plugin.Plugin
 func (c *Control) Initialize() error {
-	go c.executeDenoise()
+	// go c.executeDenoise()
+	c.stopRunningInstances()
 
 	return nil
 }
@@ -96,14 +99,6 @@ func (c *Control) loop(haltCtx context.Context, cb chan<- plugin.Callback) {
 			c.runningCheck = false
 			log.Println("denoise: exiting Plugin run loop")
 			return
-
-			// default:
-			// 	if !c.isRunning() {
-			// 		log.Println("aiDenoise: denoise process not found! Executing denoise...")
-			// 		c.executeDenoise()
-			// 	}
-
-			// 	time.Sleep(time.Second * 3)
 		}
 	}
 }
@@ -111,6 +106,7 @@ func (c *Control) loop(haltCtx context.Context, cb chan<- plugin.Callback) {
 func (c *Control) loopRunningCeck() {
 	for {
 		if !c.runningCheck {
+			c.stopDenoise()
 			break
 		}
 
@@ -148,8 +144,12 @@ func (c *Control) isRunning() bool {
 		return false
 	}
 
-	cmd, _ := exec.Command("tasklist", "/FI", "PID eq "+strconv.Itoa(c.denoiseCmd.Process.Pid)).Output()
-	output := string(cmd[:])
+	cmd := exec.Command("tasklist", "/FI", "PID eq "+strconv.Itoa(c.denoiseCmd.Process.Pid))
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+
+	cmdOutput, _ := cmd.Output()
+
+	output := string(cmdOutput[:])
 	splitOutp := strings.Split(output, " ")
 	if !(strings.ToLower(splitOutp[1]) == "no") {
 		return true
@@ -218,6 +218,53 @@ func (c *Control) stopDenoise() error {
 	}
 
 	return nil
+}
+
+func (c *Control) stopRunningInstances() {
+	log.Printf("denoise: Stopping already running instances...")
+
+	denoisePathSplit := strings.Split(c.config.DenoisePath, "\\")
+	execName := denoisePathSplit[len(denoisePathSplit)-1]
+
+	cmd := exec.Command("tasklist", "/FO", "CSV", "/FI", "IMAGENAME eq "+execName, "/NH")
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+
+	cmdOutput, err := cmd.Output()
+	if err != nil {
+		log.Printf("Failed to fetch list of running AIDenoise processes.")
+		return
+	}
+
+	output := string(cmdOutput[:])
+	lines := strings.Split(output, "\n")
+
+	if len(lines) < 1 {
+		log.Printf("AIDenoise is not running, no need to close old instances.")
+		return
+	}
+
+	for _, v := range lines {
+		if v == "" {
+			break
+		}
+
+		replaced := strings.ReplaceAll(v, "\"", "")
+		split := strings.Split(replaced, ",")
+		if len(split) < 2 {
+			break
+		}
+
+		pid := split[1]
+
+		execCmd := exec.Command("Taskkill", "/F", "/PID", pid)
+		execErr := execCmd.Start()
+
+		if execErr == nil {
+			log.Printf("Killed existing AIDenoise process with PID: %s", pid)
+		} else {
+			log.Printf("Failed to kill process with PID: %s", pid)
+		}
+	}
 }
 
 // ---------
