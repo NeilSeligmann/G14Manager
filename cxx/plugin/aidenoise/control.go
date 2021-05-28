@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/NeilSeligmann/G15Manager/system/plugin"
@@ -182,7 +183,9 @@ func (c *Control) executeDenoise() error {
 		return err
 	}
 
+	// cmd := exec.Command("C:\\Windows\\system32\\cmd.exe", "/c", denoisePath)
 	cmd := exec.Command(denoisePath)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 
 	// Run denoise executable
 	err = cmd.Start()

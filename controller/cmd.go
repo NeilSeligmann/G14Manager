@@ -24,6 +24,7 @@ import (
 // RunConfig contains the start up configuration for the controller
 type RunConfig struct {
 	DryRun     bool
+	PreLogin   bool
 	NotifierCh chan util.Notification
 }
 
@@ -100,15 +101,20 @@ func GetDependencies(conf RunConfig) (*Dependencies, error) {
 		return nil, err
 	}
 
-	aiDenoiseCtrl, err := aidenoise.NewAIDenoise(conf.DryRun)
-	if err != nil {
-		return nil, err
+	var aiDenoiseCtrl *aidenoise.Control
+
+	if !conf.PreLogin {
+		aiDenoiseCtrl, err = aidenoise.NewAIDenoise(conf.DryRun)
+		if err != nil {
+			return nil, err
+		}
+
+		config.Register(aiDenoiseCtrl)
 	}
 
-	config.Register(battery)
 	config.Register(kbCtrl)
+	config.Register(battery)
 	config.Register(thermal)
-	config.Register(aiDenoiseCtrl)
 
 	// updatable := []announcement.Updatable{
 	// 	thermal,
