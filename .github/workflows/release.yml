@@ -23,8 +23,8 @@ jobs:
         run: .\scripts\proto.ps1
       - name: test packages
         run: go test .\...
-      - name: Build MatrixControl DLL (Debug)
-        run: MSBuild.exe .\cxx\MatrixController.sln /property:Configuration=Debug /property:Platform=x64
+      # - name: Build MatrixControl DLL (Debug)
+      #   run: MSBuild.exe .\cxx\MatrixController.sln /property:Configuration=Debug /property:Platform=x64
   publish:
     name: Create release-artifacts
     runs-on: windows-latest
