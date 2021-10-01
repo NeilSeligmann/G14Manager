@@ -78,8 +78,12 @@ func (c *Controller) handleKeyPress(haltCtx context.Context) {
 				c.workQueueCh[fnUtilityKey].noisy <- struct{}{}
 
 			case kb.KeyFnF5:
-				log.Println("hid: Fn + F5 Pressed (debounced)")
-				c.workQueueCh[fnThermalProfile].noisy <- struct{}{}
+				// log.Println("hid: Fn + F5 Pressed (debounced)")
+				// c.workQueueCh[fnThermalProfile].noisy <- struct{}{}
+				// No longer debounced
+				log.Println("hid: Fn + F5 Pressed")
+				c.notifyPlugins(plugin.EvtSentinelCycleThermalProfile, int64(1))
+				
 
 			case kb.KeyVolDown:
 				log.Println("hid: volume down Pressed")
