@@ -108,8 +108,7 @@ func (c *Controller) initialize(haltCtx context.Context) error {
 		fnThermalProfile,
 	}
 	for _, key := range debounceKeys {
-		// TODO: make debounce interval configurable for accessbility
-		in, out := util.Debounce(haltCtx, time.Millisecond*500)
+		in, out := util.Debounce(haltCtx, time.Millisecond * 500)
 		c.workQueueCh[key] = workQueue{
 			noisy: in,
 			clean: out,
