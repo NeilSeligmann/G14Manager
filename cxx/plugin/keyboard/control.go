@@ -36,6 +36,7 @@ import (
 	"github.com/NeilSeligmann/G15Manager/system/persist"
 	"github.com/NeilSeligmann/G15Manager/system/plugin"
 	"github.com/NeilSeligmann/G15Manager/util"
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/micmonay/keybd_event"
@@ -270,9 +271,18 @@ func (c *Control) loop(haltCtx context.Context, cb chan<- plugin.Callback) {
 					continue
 				}
 				if int(counter) <= len(c.Config.RogKey) {
+					var err error
 					cmd := c.Config.RogKey[counter-1]
 					log.Printf("[controller] Running: %s\n", cmd)
-					if err := run("cmd.exe", "/C", cmd); err != nil {
+
+					if (govalidator.IsURL(cmd)) {
+						err = exec.Command("rundll32", "url.dll,FileProtocolHandler", cmd).Start();
+					} else {
+						err = run("cmd.exe", "/C", cmd);
+					}
+
+					if err != nil {
+						log.Println("Failed to run command: \"" + cmd + "\"");
 						log.Println(err)
 					}
 				}
