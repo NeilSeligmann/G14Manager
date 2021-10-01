@@ -117,8 +117,6 @@ func (inst *SocketInstance) processMessage(messageType int, message []byte) {
 		return
 	}
 
-	// log.Printf("Received: %s", message)
-
 	decodedMessage := SocketMessage{}
 
 	err := json.Unmarshal(message, &decodedMessage)
@@ -128,9 +126,6 @@ func (inst *SocketInstance) processMessage(messageType int, message []byte) {
 			return
 		}
 	}
-
-	// log.Printf("decodedMessage")
-	// log.Print(decodedMessage)
 
 	switch decodedMessage.Category {
 	// Info

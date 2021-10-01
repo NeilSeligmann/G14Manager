@@ -2,11 +2,12 @@
 # $scriptPath = (Get-ScriptDirectory);
 $scriptParent = Split-Path -Path $PSScriptRoot -Parent
 
+Write-Host "Watching folder: " + $scriptParent
+
 ### SET FOLDER TO WATCH + FILES TO WATCH + SUBFOLDERS YES/NO
 	$filewatcher = New-Object System.IO.FileSystemWatcher
 	#Mention the folder to monitor
-	# $filewatcher.Path = $scriptParent
-	$filewatcher.Path = "C:\Development\Go\G15Manager"
+	$filewatcher.Path = $scriptParent
 	$filewatcher.Filter = "*.*"
 	#include subdirectories $true/$false
 	$filewatcher.IncludeSubdirectories = $true
@@ -14,7 +15,7 @@ $scriptParent = Split-Path -Path $PSScriptRoot -Parent
 
 ### DEFINE ACTIONS AFTER AN EVENT IS DETECTED
 	$writeaction = {
-		.( "./build.ps1" )
+		.( "./run.ps1" )
 	}
 
 ### DECIDE WHICH EVENTS SHOULD BE WATCHED 
