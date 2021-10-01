@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/Masterminds/semver v1.5.0
+	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/bi-zone/wmi v1.1.4
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
