@@ -3,7 +3,6 @@ Session.vim
 *.syso
 build/
 rnd/
-.vscode
 box/blob.go
 s/
 client/node_modules
