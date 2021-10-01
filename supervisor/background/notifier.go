@@ -53,29 +53,35 @@ func (n *Notifier) Serve(haltCtx context.Context) error {
 		var hideTimer <-chan time.Time
 		s := make(chan util.Notification, 1)
 		q := make(chan util.Notification, qSize)
-		inflight := false
+		// inflight := false
 
 		for {
 			select {
 			case msg := <-n.C:
+				// Set message duration
 				if msg.Delay == time.Duration(0) {
 					msg.Delay = defaultDelay
 				} else if msg.Delay < minimumDelay {
 					msg.Delay = minimumDelay
 				}
-				if msg.Immediate || !inflight {
-					s <- msg
-				} else {
-					q <- msg
-				}
+
+				s <- msg
+
+				// if msg.Immediate || !inflight {
+				// 	s <- msg
+				// } else {
+				// 	q <- msg
+				// }
+
 			case msg := <-s:
 				n.show <- msg.Message
 				hideTimer = time.After(msg.Delay)
-				inflight = true
+				// inflight = true
+
 			case <-hideTimer:
 				n.hide <- struct{}{}
 				hideTimer = nil
-				inflight = false
+				// inflight = false
 				if len(q) > 0 {
 					// amazing (/s) syntax btw
 					s <- <-q
