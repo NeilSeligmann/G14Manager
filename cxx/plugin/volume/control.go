@@ -70,9 +70,9 @@ func (c *Control) loop(haltCtx context.Context, cb chan<- plugin.Callback) {
 					Delay: time.Millisecond * 500,
 				}
 				if c.isMuted {
-					n.Message = "Unmuting microphone"
+					n.Message = "Microphone Unmuted"
 				} else {
-					n.Message = "Muting microphone"
+					n.Message = "Microphone Muted"
 				}
 				cb <- plugin.Callback{
 					Event: plugin.CbNotifyToast,
