@@ -72,6 +72,7 @@ func NewSocketInstance(webServer *WebServerInstance, uuid uuid.UUID, c *gin.Cont
 }
 
 type SocketMessage struct {
+	ID       string `json:"id"`
 	Category int    `json:"category"`
 	Action   int    `json:"action"`
 	Value    string `json:"value"`
@@ -156,6 +157,14 @@ func (inst *SocketInstance) processMessage(messageType int, message []byte) {
 
 	// Send update info
 	inst.SendInfo()
+
+	// Acknowledge message if an ID was given
+	if (decodedMessage.ID != "") {
+		err := inst.ws.WriteMessage(messageType, []byte("ack " + decodedMessage.ID))
+		if err != nil {
+			log.Println("Error sending ack:", err)
+		}
+	}
 }
 
 func (inst *SocketInstance) handleSystemMessage(action int, value string) {
