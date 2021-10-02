@@ -5,7 +5,6 @@
 ## Disclaimer
 
 Work in progress. This may void your warranty. Proceed at your own risk.
-Project forked from: [G14Manager](https://github.com/zllovesuki/G14Manager)
 
 ## Current Status
 The project is currently under development.
