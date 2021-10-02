@@ -18,3 +18,8 @@ type ModifyProfileStruct struct {
 	GPUFanCurve      string `json:"gpuFanCurve"`
 	FastSwitch       bool   `json:"fastSwitch"`
 }
+
+type MoveProfileStruct struct {
+	FromId        int    `json:"fromId"`
+	TargetId      int    `json:"targetId"`
+}

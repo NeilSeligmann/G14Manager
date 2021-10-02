@@ -410,17 +410,26 @@ func (c *Control) HandleWSMessage(ws *websocket.Conn, action int, value string) 
 	case 0:
 		i, _ := strconv.Atoi(value)
 		c.setProfile(i)
+
 	// Add/Modify Profile
 	case 1:
 		modifyInput := ModifyProfileStruct{}
 		json.Unmarshal([]byte(value), &modifyInput)
 		c.AddOrModifyProfile(&modifyInput)
-	// Remove Profile
+
+	// Move Profile
 	case 2:
+		moveInput := MoveProfileStruct{}
+		json.Unmarshal([]byte(value), &moveInput)
+		c.MoveProfile(&moveInput)
+	
+	// Remove Profile
+	case 3:
 		i, _ := strconv.Atoi(value)
 		c.RemoveProfile(i)
+
 	// Reset Profiles
-	case 3:
+	case 4:
 		c.ResetProfiles()
 	}
 }
@@ -461,6 +470,35 @@ func (c *Control) AddOrModifyProfile(modifyProfile *ModifyProfileStruct) {
 		// Modify existing profile
 		c.Config.Profiles[modifyProfile.ProfileId] = profile
 	}
+}
+
+func (c *Control) MoveProfile(moveInput *MoveProfileStruct) {
+	// Ignore if less than 0
+	if (moveInput.FromId < 0 || moveInput.TargetId < 0) {
+		return
+	}
+
+	// Ignore if same id
+	if (moveInput.FromId == moveInput.TargetId) {
+		return
+	}
+
+	lastProfileIndex := len(c.Config.Profiles) - 1
+
+	// Ignore if larger than last index
+	if (moveInput.FromId > lastProfileIndex || moveInput.TargetId > lastProfileIndex) {
+		return
+	}
+
+	// Set tmp profile
+	tmpProfile := c.Config.Profiles[moveInput.TargetId];
+	
+	// Set target with from
+	c.Config.Profiles[moveInput.TargetId] = c.Config.Profiles[moveInput.FromId];
+
+	// Set from with tmp
+	c.Config.Profiles[moveInput.FromId] = tmpProfile;
+
 }
 
 func (c *Control) RemoveProfile(profileId int) {
