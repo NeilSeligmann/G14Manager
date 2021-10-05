@@ -30,9 +30,9 @@ require (
 	github.com/thejerf/suture/v4 v4.0.0
 	github.com/ugorji/go v1.2.5 // indirect
 	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf // indirect
-	golang.org/x/sys v0.0.0-20210511113859-b0526f3d8744
+	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e
 	golang.org/x/text v0.3.6 // indirect
-	golang.org/x/tools v0.1.2 // indirect
+	golang.org/x/tools v0.1.7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/grpc v1.34.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
