@@ -29,6 +29,9 @@ Invoke-Expression $MOD 2>&1
 
 Write-Host "Installing tools"
 
+$INSTALL = "go get go install .\..."
+Invoke-Expression $INSTALL
+
 $STRINGER = "go get golang.org/x/tools/cmd/stringer"
 Invoke-Expression $STRINGER
 
@@ -47,8 +50,3 @@ Write-Host "Building debug release"
 
 $BUILD_DEBUG = "go build -gcflags=`"-N -l`" -ldflags=`"-X 'main.Version=$LatestTag-debug' -X 'main.IsDebug=yes'`" -o build/G15Manager.debug.exe .\cmd\manager"
 Invoke-Expression $BUILD_DEBUG
-
-Write-Host "Building DLLs"
-
-# $BUILD_MATRIX_RELEASE_DLL = "MSBuild.exe .\cxx\MatrixController.sln /property:Configuration=Release /property:Platform=x64"
-# Invoke-Expression $BUILD_MATRIX_RELEASE_DLL
