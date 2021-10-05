@@ -66,10 +66,10 @@ func main() {
 	// Notifier
 	notifier := background.NewNotifier()
 
-	// versionChecker, err := background.NewVersionCheck(Version, "zllovesuki/G15Manager", notifier.C)
-	// if err != nil {
-	// 	log.Fatalf("[supervisor] cannot get version checker")
-	// }
+	versionChecker, err := background.NewVersionCheck(Version, "NeilSeligmann/G15Manager", notifier.C)
+	if err != nil {
+		log.Fatalf("[supervisor] cannot get version checker")
+	}
 
 	controllerConfig := controller.RunConfig{
 		DryRun:     os.Getenv("DRY_RUN") != "",
@@ -130,7 +130,7 @@ func main() {
 	// ------------
 
 	backgroundSupervisor := suture.New("backgroundSupervisor", suture.Spec{})
-	// backgroundSupervisor.Add(versionChecker)
+	backgroundSupervisor.Add(versionChecker)
 	backgroundSupervisor.Add(notifier)
 
 	rootSupervisor := suture.New("Supervisor", suture.Spec{
