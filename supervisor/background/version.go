@@ -213,6 +213,7 @@ func (v *VersionChecker) setLocalClientVersion(newVersion string) error {
 	}
 
 	v.ClientStatus.CurrentVersion = version
+	v.ClientStatus.IsUpdateAvailable = false
 
 	return nil
 }
