@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type ClientDownloader struct {
@@ -99,13 +100,32 @@ func (cl *ClientDownloader) DownloadLatestVersion() error {
 		log.Println("Temporal file removed! New client version has been successfully installed!")
 	}
 
-	cl.versionChecker.setLocalClientVersion(cl.versionChecker.ClientStatus.LatestVersion)
+	cl.versionChecker.SetLocalClientVersion(cl.versionChecker.ClientStatus.LatestVersion)
 
 	return nil
 }
 
 func (cl *ClientDownloader) String() string {
 	return "ClientDownloader"
+}
+
+func (cl *ClientDownloader) InitialClientDownload() error {
+	log.Println("No existing client found, downloading latest version...")
+
+	for i := 0; i < 20; i++ {
+		if cl.versionChecker.ClientStatus.LatestUrl == "" {
+			time.Sleep(1 * time.Second)
+		} else {
+			break
+		}
+	}
+
+	if cl.versionChecker.ClientStatus.LatestUrl == "" {
+		log.Println("Failed to obtain latest version URL!")
+		return nil
+	}
+
+	return cl.DownloadLatestVersion()
 }
 
 func Unzip(src, dest string) error {

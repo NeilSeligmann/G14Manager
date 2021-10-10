@@ -77,6 +77,12 @@ func main() {
 		log.Fatalf("[supervisor] failed to initialize client downloader")
 	}
 
+	// Check if we have an existing client
+	clientVersion, err := versionChecker.GetLocalClientVersion()
+	if err != nil || clientVersion == "" {
+		go clientDownloader.InitialClientDownload()
+	}
+
 	controllerConfig := controller.RunConfig{
 		DryRun:     os.Getenv("DRY_RUN") != "",
 		NotifierCh: notifier.C,

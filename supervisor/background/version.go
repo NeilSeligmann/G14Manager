@@ -86,7 +86,7 @@ func (v *VersionChecker) String() string {
 func (v *VersionChecker) Serve(haltCtx context.Context) error {
 	log.Println("[VersionChecker] starting checker loop")
 
-	_, err := v.getLocalClientVersion()
+	_, err := v.GetLocalClientVersion()
 	if err != nil {
 		log.Println("Failed to load local client version:")
 		log.Println(err)
@@ -201,7 +201,7 @@ func (v *VersionChecker) getLatestVersion(repo string) (*ReleaseStruct, error) {
 	return &r, nil
 }
 
-func (v *VersionChecker) setLocalClientVersion(newVersion string) error {
+func (v *VersionChecker) SetLocalClientVersion(newVersion string) error {
 	version, verErr := semver.NewVersion(newVersion)
 	if verErr != nil {
 		return verErr
@@ -218,7 +218,7 @@ func (v *VersionChecker) setLocalClientVersion(newVersion string) error {
 	return nil
 }
 
-func (v *VersionChecker) getLocalClientVersion() (string, error) {
+func (v *VersionChecker) GetLocalClientVersion() (string, error) {
 	content, err := ioutil.ReadFile(CLIENT_VER_FILE)
 	if err != nil {
 		return "", err
