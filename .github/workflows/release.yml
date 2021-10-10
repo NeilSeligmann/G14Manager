@@ -4,25 +4,25 @@ on:
       - "v*"
 name: Build Release
 jobs:
-  test:
-    name: Test before build
-    runs-on: windows-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: "1.17.1" # The Go version to download (if necessary) and use.
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
-      # - name: Install Protoc
-      #   uses: arduino/setup-protoc@v1
-      # - name: Generate protobuf
-      #   shell: powershell
-      #   run: .\scripts\proto.ps1
-      - name: test packages
-        run: go test .\...
+  # test:
+  #   name: Test before build
+  #   runs-on: windows-latest
+  #   steps:
+  #     - name: Checkout the repository
+  #       uses: actions/checkout@v2
+  #     - name: Install Go
+  #       uses: actions/setup-go@v2
+  #       with:
+  #         go-version: "1.17.1" # The Go version to download (if necessary) and use.
+  #     - name: Add msbuild to PATH
+  #       uses: microsoft/setup-msbuild@v1.0.2
+  #     # - name: Install Protoc
+  #     #   uses: arduino/setup-protoc@v1
+  #     # - name: Generate protobuf
+  #     #   shell: powershell
+  #     #   run: .\scripts\proto.ps1
+  #     - name: test packages
+  #       run: go test .\...
   publish:
     name: Create release-artifacts
     runs-on: windows-latest
