@@ -1,11 +1,14 @@
 package background
 
 import (
+	"archive/zip"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 type ClientDownloader struct {
@@ -38,9 +41,8 @@ func (cl *ClientDownloader) CreateFolderIfNeeded(path string) error {
 }
 
 func (cl *ClientDownloader) DownloadLatestVersion() error {
-	log.Printf("Download latest version! %s", cl.versionChecker.ClientStatus.latestUrl)
+	log.Printf("Downloading latest client version! %s\n", cl.versionChecker.ClientStatus.latestUrl)
 
-	cl.CreateFolderIfNeeded("./data")
 	cl.CreateFolderIfNeeded("./data/downloads")
 
 	fileName := "./data/downloads/client_tmp.zip"
@@ -50,12 +52,14 @@ func (cl *ClientDownloader) DownloadLatestVersion() error {
 	if err != nil {
 		return err
 	}
+
 	client := http.Client{
 		CheckRedirect: func(r *http.Request, via []*http.Request) error {
 			r.URL.Opaque = r.URL.Path
 			return nil
 		},
 	}
+
 	// Put content on file
 	resp, err := client.Get(cl.versionChecker.ClientStatus.latestUrl)
 	if err != nil {
@@ -68,13 +72,100 @@ func (cl *ClientDownloader) DownloadLatestVersion() error {
 		return err
 	}
 
-	defer file.Close()
+	closeErr := file.Close()
+	if closeErr != nil {
+		log.Println("Failed to close temporary file!")
+		log.Println(closeErr)
+	}
 
-	fmt.Printf("Downloaded a file %s with size %d", fileName, size)
+	log.Printf("Downloaded new client with a size of %d, unzipping...\n", size)
+
+	// Extract zip to web folder
+	zipErr := Unzip(fileName, "./data/web/")
+	if zipErr != nil {
+		log.Print("Failed to unzip downloaded client!")
+		log.Print(zipErr)
+		return zipErr
+	}
+
+	log.Printf("Unzipping done, removing temporal file...\n")
+
+	// Remove file
+	removeErr := os.Remove(file.Name())
+	if removeErr != nil {
+		log.Println("Failed to remove temporal file!")
+		log.Print(removeErr)
+	} else {
+		log.Println("Temporal file removed! New client version has been successfully installed!")
+	}
 
 	return nil
 }
 
 func (cl *ClientDownloader) String() string {
 	return "ClientDownloader"
+}
+
+func Unzip(src, dest string) error {
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := r.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	os.MkdirAll(dest, 0755)
+
+	// Closure to address file descriptors issue with all the deferred .Close() methods
+	extractAndWriteFile := func(f *zip.File) error {
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+		defer func() {
+			if err := rc.Close(); err != nil {
+				panic(err)
+			}
+		}()
+
+		path := filepath.Join(dest, f.Name)
+
+		// Check for ZipSlip (Directory traversal)
+		if !strings.HasPrefix(path, filepath.Clean(dest)+string(os.PathSeparator)) {
+			return fmt.Errorf("illegal file path: %s", path)
+		}
+
+		if f.FileInfo().IsDir() {
+			os.MkdirAll(path, f.Mode())
+		} else {
+			os.MkdirAll(filepath.Dir(path), f.Mode())
+			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+			if err != nil {
+				return err
+			}
+			defer func() {
+				if err := f.Close(); err != nil {
+					panic(err)
+				}
+			}()
+
+			_, err = io.Copy(f, rc)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	for _, f := range r.File {
+		err := extractAndWriteFile(f)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
