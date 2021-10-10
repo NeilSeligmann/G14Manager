@@ -275,14 +275,18 @@ func (c *Control) loop(haltCtx context.Context, cb chan<- plugin.Callback) {
 					cmd := c.Config.RogKey[counter-1]
 					log.Printf("[controller] Running: %s\n", cmd)
 
-					if (govalidator.IsURL(cmd)) {
-						err = exec.Command("rundll32", "url.dll,FileProtocolHandler", cmd).Start();
+					if cmd == "$webclient" {
+						cmd = "http://localhost:8080"
+					}
+
+					if govalidator.IsURL(cmd) {
+						err = exec.Command("rundll32", "url.dll,FileProtocolHandler", cmd).Start()
 					} else {
-						err = run("cmd.exe", "/C", cmd);
+						err = run("cmd.exe", "/C", cmd)
 					}
 
 					if err != nil {
-						log.Println("Failed to run command: \"" + cmd + "\"");
+						log.Println("Failed to run command: \"" + cmd + "\"")
 						log.Println(err)
 					}
 				}

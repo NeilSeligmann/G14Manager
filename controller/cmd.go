@@ -82,7 +82,7 @@ func GetDependencies(conf RunConfig) (*Dependencies, error) {
 
 	kbCtrl, err := keyboard.NewControl(keyboard.Config{
 		DryRun: conf.DryRun,
-		RogKey: []string{"Taskmgr.exe"},
+		RogKey: []string{"$webclient", "Taskmgr.exe"},
 	})
 	if err != nil {
 		return nil, err
