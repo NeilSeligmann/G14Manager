@@ -89,6 +89,7 @@ func main() {
 	}
 
 	// Set client downloader
+	dep.Version = versionChecker
 	dep.ClientDownloader = clientDownloader
 
 	ctx, cancel := context.WithCancel(context.Background())

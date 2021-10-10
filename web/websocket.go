@@ -192,6 +192,7 @@ func (inst *SocketInstance) SendInfo() {
 			"rr":       inst.Dependencies.RR.GetWSInfo(),
 			"battery":  inst.Dependencies.Battery.GetWSInfo(),
 			"denoise":  inst.Dependencies.AIDenoise.GetWSInfo(),
+			"versions": inst.Dependencies.Version.GetWSInfo(),
 		},
 	})
 }

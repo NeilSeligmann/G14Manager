@@ -38,6 +38,7 @@ type Dependencies struct {
 	RR               *rr.Control
 	AIDenoise        *aidenoise.Control
 	ConfigRegistry   persist.ConfigRegistry
+	Version          *background.VersionChecker
 	ClientDownloader *background.ClientDownloader
 	// Updatable      []announcement.Updatable
 }

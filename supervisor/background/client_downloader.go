@@ -41,7 +41,7 @@ func (cl *ClientDownloader) CreateFolderIfNeeded(path string) error {
 }
 
 func (cl *ClientDownloader) DownloadLatestVersion() error {
-	log.Printf("Downloading latest client version! %s\n", cl.versionChecker.ClientStatus.latestUrl)
+	log.Printf("Downloading latest client version! %s\n", cl.versionChecker.ClientStatus.LatestUrl)
 
 	cl.CreateFolderIfNeeded("./data/downloads")
 
@@ -61,7 +61,7 @@ func (cl *ClientDownloader) DownloadLatestVersion() error {
 	}
 
 	// Put content on file
-	resp, err := client.Get(cl.versionChecker.ClientStatus.latestUrl)
+	resp, err := client.Get(cl.versionChecker.ClientStatus.LatestUrl)
 	if err != nil {
 		return err
 	}
@@ -98,6 +98,8 @@ func (cl *ClientDownloader) DownloadLatestVersion() error {
 	} else {
 		log.Println("Temporal file removed! New client version has been successfully installed!")
 	}
+
+	cl.versionChecker.setLocalClientVersion(cl.versionChecker.ClientStatus.LatestVersion)
 
 	return nil
 }

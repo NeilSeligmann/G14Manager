@@ -7,21 +7,25 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/Masterminds/semver"
 	"github.com/NeilSeligmann/G15Manager/util"
+	"github.com/gin-gonic/gin"
 )
 
 var repoServer string = "NeilSeligmann/G15Manager"
 var repoClient string = "NeilSeligmann/G15Manager-client"
 
+var CLIENT_VER_FILE string = "./data/client_ver"
+
 type VersionCheckerStatus struct {
-	currentVersion    *semver.Version `json:"currentVersion"`
-	isUpdateAvailable bool            `json:"isUpdateAvailable"`
-	hasCheckFailed    bool            `json:"hasCheckFailed"`
-	latestVersion     string          `json:"latestVersion"`
-	latestUrl         string          `json:"latestUrl"`
+	CurrentVersion    *semver.Version `json:"currentVersion"`
+	IsUpdateAvailable bool            `json:"isUpdateAvailable"`
+	HasCheckFailed    bool            `json:"hasCheckFailed"`
+	LatestVersion     string          `json:"latestVersion"`
+	LatestUrl         string          `json:"latestUrl"`
 }
 
 type VersionChecker struct {
@@ -50,6 +54,7 @@ func NewVersionCheck(current string, notifier chan<- util.Notification) (*Versio
 	if err != nil {
 		return nil, err
 	}
+
 	tick := make(chan time.Time, 1)
 	tick <- time.Now()
 
@@ -58,18 +63,18 @@ func NewVersionCheck(current string, notifier chan<- util.Notification) (*Versio
 		tick:     tick,
 		notifier: notifier,
 		ServerStatus: &VersionCheckerStatus{
-			isUpdateAvailable: false,
-			hasCheckFailed:    false,
-			currentVersion:    &semver.Version{},
-			latestVersion:     current,
-			latestUrl:         "",
+			IsUpdateAvailable: false,
+			HasCheckFailed:    false,
+			CurrentVersion:    &semver.Version{},
+			LatestVersion:     current,
+			LatestUrl:         "",
 		},
 		ClientStatus: &VersionCheckerStatus{
-			isUpdateAvailable: false,
-			hasCheckFailed:    false,
-			currentVersion:    &semver.Version{},
-			latestVersion:     "",
-			latestUrl:         "",
+			IsUpdateAvailable: false,
+			HasCheckFailed:    false,
+			CurrentVersion:    &semver.Version{},
+			LatestVersion:     "",
+			LatestUrl:         "",
 		},
 	}, nil
 }
@@ -80,6 +85,12 @@ func (v *VersionChecker) String() string {
 
 func (v *VersionChecker) Serve(haltCtx context.Context) error {
 	log.Println("[VersionChecker] starting checker loop")
+
+	_, err := v.getLocalClientVersion()
+	if err != nil {
+		log.Println("Failed to load local client version:")
+		log.Println(err)
+	}
 
 	go func() {
 		ticker := time.NewTicker(time.Hour * 6)
@@ -107,24 +118,26 @@ func (v *VersionChecker) Serve(haltCtx context.Context) error {
 			latest, err := v.getLatestVersion(repoServer)
 
 			if err == nil {
-				v.ServerStatus.latestUrl = latest.Assets[0].DownloadUrl
-				v.ServerStatus.latestVersion = latest.version.String()
-				v.ServerStatus.hasCheckFailed = false
+				v.ServerStatus.LatestUrl = latest.Assets[0].DownloadUrl
+				v.ServerStatus.LatestVersion = latest.version.String()
+				v.ServerStatus.HasCheckFailed = false
 
 				if latest.version != nil {
-					if latest.version.GreaterThan(v.ServerStatus.currentVersion) {
+					if latest.version.GreaterThan(v.ServerStatus.CurrentVersion) {
 						log.Printf("[VersionChecker] new server version found: %s\n", latest.version.String())
 
-						v.ServerStatus.isUpdateAvailable = true
+						v.ServerStatus.IsUpdateAvailable = true
 
 						v.notifier <- util.Notification{
 							Message: fmt.Sprintf("A new version of G15Manager is available: %s", latest.version.String()),
 						}
 					}
+				} else {
+					log.Printf("[VersionChecker] already running latest server version: %s\n", latest.version.String())
 				}
 			} else {
 				log.Printf("[VersionChecker] error checking for a new server version: %+v\n", err)
-				v.ServerStatus.hasCheckFailed = true
+				v.ServerStatus.HasCheckFailed = true
 			}
 
 			// Client Update Check
@@ -132,18 +145,19 @@ func (v *VersionChecker) Serve(haltCtx context.Context) error {
 			latest, err = v.getLatestVersion(repoClient)
 
 			if err == nil && latest.version != nil {
-				log.Printf("assets: %v", len(latest.Assets))
-				v.ClientStatus.latestUrl = latest.Assets[0].DownloadUrl
-				v.ClientStatus.latestVersion = latest.version.String()
-				v.ClientStatus.hasCheckFailed = false
+				v.ClientStatus.LatestUrl = latest.Assets[0].DownloadUrl
+				v.ClientStatus.LatestVersion = latest.version.String()
+				v.ClientStatus.HasCheckFailed = false
 
-				if latest.version.GreaterThan(v.ClientStatus.currentVersion) {
+				if latest.version.GreaterThan(v.ClientStatus.CurrentVersion) {
 					log.Printf("[VersionChecker] new client version found: %s\n", latest.version.String())
-					v.ClientStatus.isUpdateAvailable = true
+					v.ClientStatus.IsUpdateAvailable = true
+				} else {
+					log.Printf("[VersionChecker] already running latest client version: %s\n", latest.version.String())
 				}
 			} else {
 				log.Printf("[VersionChecker] error checking for a new client version: %+v\n", err)
-				v.ClientStatus.hasCheckFailed = true
+				v.ClientStatus.HasCheckFailed = true
 			}
 		}
 	}
@@ -185,4 +199,43 @@ func (v *VersionChecker) getLatestVersion(repo string) (*ReleaseStruct, error) {
 	r.version = version
 
 	return &r, nil
+}
+
+func (v *VersionChecker) setLocalClientVersion(newVersion string) error {
+	version, verErr := semver.NewVersion(newVersion)
+	if verErr != nil {
+		return verErr
+	}
+
+	err := os.WriteFile(CLIENT_VER_FILE, []byte(version.String()), 0666)
+	if err != nil {
+		return err
+	}
+
+	v.ClientStatus.CurrentVersion = version
+
+	return nil
+}
+
+func (v *VersionChecker) getLocalClientVersion() (string, error) {
+	content, err := ioutil.ReadFile(CLIENT_VER_FILE)
+	if err != nil {
+		return "", err
+	}
+
+	version, verErr := semver.NewVersion(string(content))
+	if verErr != nil {
+		return "", verErr
+	}
+
+	v.ClientStatus.CurrentVersion = version
+
+	return version.String(), nil
+}
+
+func (v *VersionChecker) GetWSInfo() gin.H {
+	return gin.H{
+		"client": v.ClientStatus,
+		"server": v.ServerStatus,
+	}
 }
