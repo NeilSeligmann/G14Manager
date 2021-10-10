@@ -67,7 +67,7 @@ func NewVersionCheck(current string, notifier chan<- util.Notification) (*Versio
 		ServerStatus: &VersionCheckerStatus{
 			IsUpdateAvailable: false,
 			HasCheckFailed:    false,
-			CurrentVersion:    &semver.Version{},
+			CurrentVersion:    sem,
 			LatestVersion:     current,
 			LatestUrl:         "",
 		},
