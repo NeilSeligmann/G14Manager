@@ -26,6 +26,7 @@ type VersionCheckerStatus struct {
 	HasCheckFailed    bool            `json:"hasCheckFailed"`
 	LatestVersion     string          `json:"latestVersion"`
 	LatestUrl         string          `json:"latestUrl"`
+	ManualUrl         string          `json:"manualUrl"`
 }
 
 type VersionChecker struct {
@@ -45,6 +46,7 @@ type releaseAsset struct {
 
 type ReleaseStruct struct {
 	TagName string         `json:"tag_name"`
+	HtmlUrl string         `json:"html_url"`
 	Assets  []releaseAsset `json:"assets"`
 	version *semver.Version
 }
@@ -118,6 +120,7 @@ func (v *VersionChecker) Serve(haltCtx context.Context) error {
 			latest, err := v.getLatestVersion(repoServer)
 
 			if err == nil {
+				v.ServerStatus.ManualUrl = latest.HtmlUrl
 				v.ServerStatus.LatestUrl = latest.Assets[0].DownloadUrl
 				v.ServerStatus.LatestVersion = latest.version.String()
 				v.ServerStatus.HasCheckFailed = false
@@ -145,6 +148,7 @@ func (v *VersionChecker) Serve(haltCtx context.Context) error {
 			latest, err = v.getLatestVersion(repoClient)
 
 			if err == nil && latest.version != nil {
+				v.ClientStatus.ManualUrl = latest.HtmlUrl
 				v.ClientStatus.LatestUrl = latest.Assets[0].DownloadUrl
 				v.ClientStatus.LatestVersion = latest.version.String()
 				v.ClientStatus.HasCheckFailed = false
