@@ -1,6 +1,7 @@
 package web
 
 import (
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
@@ -25,6 +26,9 @@ func NewWebServer(dep *controller.Dependencies) *WebServerInstance {
 	}
 
 	r.Use(IPWhiteList(whitelist))
+
+	// Serve web client
+	r.Use(static.Serve("/", static.LocalFile("./data/web", true)))
 
 	r.GET("/ping", func(c *gin.Context) {
 		// dep.Volume.ToggleMuted()
