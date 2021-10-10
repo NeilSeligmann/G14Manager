@@ -66,9 +66,15 @@ func main() {
 	// Notifier
 	notifier := background.NewNotifier()
 
-	versionChecker, err := background.NewVersionCheck(Version, "NeilSeligmann/G15Manager", notifier.C)
+	// Version Checker for the Manager/Server
+	versionChecker, err := background.NewVersionCheck(Version, notifier.C)
 	if err != nil {
-		log.Fatalf("[supervisor] cannot get version checker")
+		log.Fatalf("[supervisor] cannot get version checker (server)")
+	}
+
+	clientDownloader, err := background.NewClientDownloader(versionChecker)
+	if err != nil {
+		log.Fatalf("[supervisor] failed to initialize client downloader")
 	}
 
 	controllerConfig := controller.RunConfig{
@@ -81,6 +87,9 @@ func main() {
 		log.Print(err)
 		log.Fatalf("[supervisor] cannot get dependencies\n")
 	}
+
+	// Set client downloader
+	dep.ClientDownloader = clientDownloader
 
 	ctx, cancel := context.WithCancel(context.Background())
 

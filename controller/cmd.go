@@ -9,7 +9,7 @@ import (
 	"github.com/NeilSeligmann/G15Manager/cxx/plugin/rr"
 	"github.com/NeilSeligmann/G15Manager/cxx/plugin/volume"
 
-	// "github.com/NeilSeligmann/G15Manager/rpc/announcement"
+	"github.com/NeilSeligmann/G15Manager/supervisor/background"
 	"github.com/NeilSeligmann/G15Manager/system/atkacpi"
 	"github.com/NeilSeligmann/G15Manager/system/battery"
 	"github.com/NeilSeligmann/G15Manager/system/persist"
@@ -29,15 +29,16 @@ type RunConfig struct {
 }
 
 type Dependencies struct {
-	WMI            atkacpi.WMI
-	Keyboard       *keyboard.Control
-	Battery        *battery.ChargeLimit
-	Volume         *volume.Control
-	Thermal        *thermal.Control
-	GPU            *gpu.Control
-	RR             *rr.Control
-	AIDenoise      *aidenoise.Control
-	ConfigRegistry persist.ConfigRegistry
+	WMI              atkacpi.WMI
+	Keyboard         *keyboard.Control
+	Battery          *battery.ChargeLimit
+	Volume           *volume.Control
+	Thermal          *thermal.Control
+	GPU              *gpu.Control
+	RR               *rr.Control
+	AIDenoise        *aidenoise.Control
+	ConfigRegistry   persist.ConfigRegistry
+	ClientDownloader *background.ClientDownloader
 	// Updatable      []announcement.Updatable
 }
 

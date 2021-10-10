@@ -159,8 +159,8 @@ func (inst *SocketInstance) processMessage(messageType int, message []byte) {
 	inst.SendInfo()
 
 	// Acknowledge message if an ID was given
-	if (decodedMessage.ID != "") {
-		err := inst.ws.WriteMessage(messageType, []byte("ack " + decodedMessage.ID))
+	if decodedMessage.ID != "" {
+		err := inst.ws.WriteMessage(messageType, []byte("ack "+decodedMessage.ID))
 		if err != nil {
 			log.Println("Error sending ack:", err)
 		}
@@ -172,6 +172,13 @@ func (inst *SocketInstance) handleSystemMessage(action int, value string) {
 	// Info
 	case 0:
 		inst.SendInfo()
+	// Update Client
+	case 1:
+		err := inst.Dependencies.ClientDownloader.DownloadLatestVersion()
+		if err != nil {
+			log.Printf("Failed to download client:")
+			log.Fatal(err)
+		}
 	}
 }
 
