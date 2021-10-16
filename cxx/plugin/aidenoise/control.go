@@ -183,7 +183,6 @@ func (c *Control) executeDenoise() error {
 		return err
 	}
 
-	// cmd := exec.Command("C:\\Windows\\system32\\cmd.exe", "/c", denoisePath)
 	cmd := exec.Command(denoisePath)
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 
