@@ -30,7 +30,7 @@ _Note_: Currently, the default profiles expect Power Plans "High Performance" an
 
 You can open the Web UI by pressing the ROG Key only once (by default), or by going to [http://localhost:34453/](http://localhost:34453/).
 
-From there you can change any setting you want easily.
+From there you can easily change any setting you want.
 
 
 ## Bug Report
