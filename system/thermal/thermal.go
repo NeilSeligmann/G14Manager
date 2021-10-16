@@ -20,7 +20,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os/exec"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -75,6 +77,11 @@ type Config struct {
 type PersistConfig struct {
 	CurrentProfile int       `json:"currentProfile"`
 	SavedProfiles  []Profile `json:"profiles"`
+}
+
+type Temperatures struct {
+	GPU float32 `json:"gpu"`
+	CPU float32 `json:"cpu"`
 }
 
 var _ plugin.Plugin = &Control{}
@@ -422,7 +429,7 @@ func (c *Control) HandleWSMessage(ws *websocket.Conn, action int, value string) 
 		moveInput := MoveProfileStruct{}
 		json.Unmarshal([]byte(value), &moveInput)
 		c.MoveProfile(&moveInput)
-	
+
 	// Remove Profile
 	case 3:
 		i, _ := strconv.Atoi(value)
@@ -474,30 +481,30 @@ func (c *Control) AddOrModifyProfile(modifyProfile *ModifyProfileStruct) {
 
 func (c *Control) MoveProfile(moveInput *MoveProfileStruct) {
 	// Ignore if less than 0
-	if (moveInput.FromId < 0 || moveInput.TargetId < 0) {
+	if moveInput.FromId < 0 || moveInput.TargetId < 0 {
 		return
 	}
 
 	// Ignore if same id
-	if (moveInput.FromId == moveInput.TargetId) {
+	if moveInput.FromId == moveInput.TargetId {
 		return
 	}
 
 	lastProfileIndex := len(c.Config.Profiles) - 1
 
 	// Ignore if larger than last index
-	if (moveInput.FromId > lastProfileIndex || moveInput.TargetId > lastProfileIndex) {
+	if moveInput.FromId > lastProfileIndex || moveInput.TargetId > lastProfileIndex {
 		return
 	}
 
 	// Set tmp profile
-	tmpProfile := c.Config.Profiles[moveInput.TargetId];
-	
+	tmpProfile := c.Config.Profiles[moveInput.TargetId]
+
 	// Set target with from
-	c.Config.Profiles[moveInput.TargetId] = c.Config.Profiles[moveInput.FromId];
+	c.Config.Profiles[moveInput.TargetId] = c.Config.Profiles[moveInput.FromId]
 
 	// Set from with tmp
-	c.Config.Profiles[moveInput.FromId] = tmpProfile;
+	c.Config.Profiles[moveInput.FromId] = tmpProfile
 
 }
 
@@ -507,6 +514,29 @@ func (c *Control) RemoveProfile(profileId int) {
 
 func (c *Control) ResetProfiles() {
 	c.Config.Profiles = GetDefaultThermalProfiles()
+}
+
+func (c *Control) GetTemperatures() Temperatures {
+	output := Temperatures{}
+
+	// Get GPU Temp
+	out, err := exec.Command("cmd.exe", "/c", "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader").Output()
+	if err != nil {
+		log.Println("Failed to run Nvidia SMI to get GPU temperatures.")
+		log.Print(err)
+		return output
+	}
+
+	parsedGPU, err := strconv.ParseFloat(strings.Replace(string(out), "\r\n", "", -1), 32)
+	if err != nil {
+		log.Println("Failed to parse Nvidia SMI's output.")
+		log.Print(err)
+		return output
+	}
+
+	output.GPU = float32(parsedGPU)
+
+	return output
 }
 
 // func (c *Control) ConfigUpdate(u announcement.Update) {

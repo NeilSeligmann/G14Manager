@@ -1,6 +1,9 @@
 package web
 
 import (
+	"log"
+	"time"
+
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -11,11 +14,14 @@ import (
 type WebServerInstance struct {
 	WebServer       *gin.Engine
 	SocketInstances map[uuid.UUID]*SocketInstance
+	Dependencies    *controller.Dependencies
+	IsLooping       bool
 }
 
 func NewWebServer(dep *controller.Dependencies) *WebServerInstance {
 	webServerInstance := WebServerInstance{
 		SocketInstances: make(map[uuid.UUID]*SocketInstance),
+		Dependencies:    dep,
 	}
 
 	r := gin.Default()
@@ -47,7 +53,10 @@ func NewWebServer(dep *controller.Dependencies) *WebServerInstance {
 			instance := NewSocketInstance(&webServerInstance, uuid, c, dep)
 			webServerInstance.SocketInstances[uuid] = &instance
 
-			instance.handleSocket(c)
+			log.Printf("New socket connected: %s\n", uuid)
+
+			defer instance.handleSocket(c)
+			defer webServerInstance.StartLoop()
 		})
 	}
 
@@ -56,6 +65,34 @@ func NewWebServer(dep *controller.Dependencies) *WebServerInstance {
 	}()
 
 	return &webServerInstance
+}
+
+func (webInst *WebServerInstance) StartLoop() {
+	log.Println("Start Loop!")
+	if webInst.IsLooping {
+		return
+	}
+
+	go func() {
+		for {
+			// Stop loop
+			if len(webInst.SocketInstances) < 1 {
+				webInst.IsLooping = false
+				break
+			}
+
+			// Wait 1 second
+			time.Sleep(1 * time.Second)
+
+			// Loop
+			temps := webInst.Dependencies.Thermal.GetTemperatures()
+
+			// Send temps to all sockets
+			for _, socket := range webInst.SocketInstances {
+				socket.SendTemperatures(temps)
+			}
+		}
+	}()
 }
 
 func (webInst *WebServerInstance) onSocketClose(socketInst *SocketInstance) {

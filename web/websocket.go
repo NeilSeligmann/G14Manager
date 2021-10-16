@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/NeilSeligmann/G15Manager/controller"
+	"github.com/NeilSeligmann/G15Manager/system/thermal"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -194,6 +195,13 @@ func (inst *SocketInstance) SendInfo() {
 			"denoise":  inst.Dependencies.AIDenoise.GetWSInfo(),
 			"versions": inst.Dependencies.Version.GetWSInfo(),
 		},
+	})
+}
+
+func (inst *SocketInstance) SendTemperatures(temps thermal.Temperatures) {
+	inst.SendJSON(gin.H{
+		"action": 1,
+		"data":   temps,
 	})
 }
 
