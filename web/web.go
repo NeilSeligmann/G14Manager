@@ -68,7 +68,6 @@ func NewWebServer(dep *controller.Dependencies) *WebServerInstance {
 }
 
 func (webInst *WebServerInstance) StartLoop() {
-	log.Println("Start Loop!")
 	if webInst.IsLooping {
 		return
 	}
@@ -108,7 +107,6 @@ func (webInst *WebServerInstance) BroadcastJSON(v interface{}) {
 
 func (webInst *WebServerInstance) BroadcastInfo() {
 	for _, socketInst := range webInst.SocketInstances {
-		// socketInst.SendInfo()
 		socketInst.ShouldSendInfo = true
 	}
 }

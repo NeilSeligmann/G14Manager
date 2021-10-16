@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/NeilSeligmann/G15Manager/controller"
@@ -58,6 +59,7 @@ type SocketInstance struct {
 	Dependencies   *controller.Dependencies
 	ShouldSendInfo bool
 	ws             *websocket.Conn
+	mu             sync.Mutex
 }
 
 func NewSocketInstance(webServer *WebServerInstance, uuid uuid.UUID, c *gin.Context, dep *controller.Dependencies) SocketInstance {
@@ -111,10 +113,10 @@ func (inst *SocketInstance) handleSocket(c *gin.Context) {
 
 func (inst *SocketInstance) processMessage(messageType int, message []byte) {
 	if string(message) == "hb" {
-		err := inst.ws.WriteMessage(messageType, []byte("alive"))
-		if err != nil {
-			log.Println("Error responding to heartbeat:", err)
-		}
+		inst.SendJSON(gin.H{
+			"action": 0,
+			"data":   true,
+		})
 
 		return
 	}
@@ -185,7 +187,7 @@ func (inst *SocketInstance) handleSystemMessage(action int, value string) {
 
 func (inst *SocketInstance) SendInfo() {
 	inst.SendJSON(gin.H{
-		"action": 0,
+		"action": 1,
 		"data": gin.H{
 			"thermal":  inst.Dependencies.Thermal.GetWSInfo(),
 			"keyboard": inst.Dependencies.Keyboard.GetWSInfo(),
@@ -200,12 +202,15 @@ func (inst *SocketInstance) SendInfo() {
 
 func (inst *SocketInstance) SendTemperatures(temps thermal.Temperatures) {
 	inst.SendJSON(gin.H{
-		"action": 1,
+		"action": 2,
 		"data":   temps,
 	})
 }
 
 func (inst *SocketInstance) SendJSON(v interface{}) {
+	inst.mu.Lock()
+	defer inst.mu.Unlock()
+
 	err := inst.ws.WriteJSON(v)
 
 	if err != nil {
