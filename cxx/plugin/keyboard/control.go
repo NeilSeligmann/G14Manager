@@ -276,7 +276,7 @@ func (c *Control) loop(haltCtx context.Context, cb chan<- plugin.Callback) {
 					log.Printf("[controller] Running: %s\n", cmd)
 
 					if cmd == "$webclient" {
-						cmd = "http://localhost:8080"
+						cmd = "http://localhost:34453"
 					}
 
 					if govalidator.IsURL(cmd) {
