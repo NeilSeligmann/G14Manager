@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	// "github.com/NeilSeligmann/G15Manager/rpc/announcement"
@@ -519,8 +520,11 @@ func (c *Control) ResetProfiles() {
 func (c *Control) GetTemperatures() Temperatures {
 	output := Temperatures{}
 
+	cmd := exec.Command("cmd.exe", "/c", "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader")
+	cmd.SysProcAttr = &syscall.SysProcAttr{CreationFlags: 0x08000000}
+
 	// Get GPU Temp
-	out, err := exec.Command("cmd.exe", "/c", "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader").Output()
+	out, err := cmd.Output()
 	if err != nil {
 		log.Println("Failed to run Nvidia SMI to get GPU temperatures.")
 		log.Print(err)
