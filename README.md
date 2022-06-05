@@ -47,7 +47,7 @@ If your encounter an issue with using G15Manager (e.g. does not start, functiona
 G15Manager will most probably not work on other Zephyrus variants. If you have a G14 use [this manager instead](https://github.com/zllovesuki/G15Manager).
 
 Tested Zephyrus G15 Models:
-- G503QR
+- GA503QR
 
 Asus Optimization (the service) **cannot** be running, otherwise G15Manager and Asus Optimization will be fighting over control. We only need Asus Optimization (the driver) to be installed so Windows will load `atkwmiacpi64.sys`, and thus expose a `\\.\ATKACPI` device to be used.
 
@@ -63,7 +63,7 @@ You do not need any other software from Asus (e.g. Armoury Crate and its cousins
 
 "Armoury Crate Control Interface" also exists as a placeholder (stud in the DSDT table), and I'm not sure what purpose does this serve. Strictly speaking, you may disable this in Device Manager and suffer no ill side effects.
 
-Only two pieces of hardware are useful for taking full control of your G14: "Microsoft ACPI-Compliant Embedded Controller" (this stores the configuration, including your fan curves), and "Microsoft Windows Management Interface for ACPI" (this interacts with the embedded controller in the firmware). Since they are ACPI functions, user-space applications cannot invoke those methods (unless we run WinRing0). Therefore, `atkwmiacpi64.sys` exists solely to create a kernel mode device (`\\.\ATKACPI`), and an user-space device (`\\DosDevices\ATKACPI`) so user-space applications and interface with the firmware (including controlling the fan curve, among other devious things).
+Only two pieces of hardware are useful for taking full control of your G15: "Microsoft ACPI-Compliant Embedded Controller" (this stores the configuration, including your fan curves), and "Microsoft Windows Management Interface for ACPI" (this interacts with the embedded controller in the firmware). Since they are ACPI functions, user-space applications cannot invoke those methods (unless we run WinRing0). Therefore, `atkwmiacpi64.sys` exists solely to create a kernel mode device (`\\.\ATKACPI`), and an user-space device (`\\DosDevices\ATKACPI`) so user-space applications and interface with the firmware (including controlling the fan curve, among other devious things).
 
 ---
 
