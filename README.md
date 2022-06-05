@@ -28,7 +28,7 @@ Current Features:
 
 > When the G15 Manager is first launched it will automatically download the latest client from it's [repository](https://github.com/NeilSeligmann/G15Manager-client)
 
-You can open the Web UI by pressing the ROG Key only once (by default), or by going to [http://localhost:34453/](http://localhost:34453/).
+You can open the Web UI by pressing the ROG Key only once (by default), or by going to [http://127.0.0.1:34453/](http://127.0.0.1:34453/).
 
 From there you can easily change any setting you want.
 
