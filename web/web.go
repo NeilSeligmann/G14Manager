@@ -29,6 +29,7 @@ func NewWebServer(dep *controller.Dependencies) *WebServerInstance {
 
 	var whitelist map[string]bool = map[string]bool{
 		"127.0.0.1": true,
+		"localhost": true
 	}
 
 	r.Use(IPWhiteList(whitelist))

@@ -11,7 +11,7 @@ func IPWhiteList(whitelist map[string]bool) gin.HandlerFunc {
 		if !whitelist[c.ClientIP()] {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 				"status":  http.StatusForbidden,
-				"message": "Permission denied",
+				"message": "Permission denied, address not in whitelist.",
 			})
 			return
 		}
