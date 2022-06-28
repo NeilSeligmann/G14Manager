@@ -52,7 +52,7 @@ func NewAIDenoise(dryRun bool) (*Control, error) {
 
 func defaultConfig() *AINoiseConfig {
 	return &AINoiseConfig{
-		Enabled:     true,
+		Enabled:     false,
 		DenoisePath: "C:\\Program Files\\ASUS\\ARMOURY CRATE Service\\DenoiseAIPlugin\\ArmouryCrate.DenoiseAI.exe",
 	}
 }
