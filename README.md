@@ -46,8 +46,12 @@ If you encounter an issue with the G15Manager (e.g. does not start, stuff does n
 
 G15Manager will most probably not work on other Zephyrus variants. If you have a G14 use [this manager instead](https://github.com/zllovesuki/G15Manager).
 
-Tested Zephyrus G15 Models:
-- GA503QR
+Tested Models:
+- Zephyrus G15
+  - GA503QR
+
+- Zephyrus G14
+  - [GA401QM](https://github.com/NeilSeligmann/G15Manager/issues/1) Reported by [@aminoa](https://github.com/aminoa)
 
 Asus Optimization (the service) **cannot** be running, otherwise G15Manager and Asus Optimization will be fighting over control. We only need Asus Optimization (the driver) to be installed so Windows will load `atkwmiacpi64.sys`, and thus expose a `\\.\ATKACPI` device to be used.
 
