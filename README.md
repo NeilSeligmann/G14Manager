@@ -2,6 +2,26 @@
 
 ![Build Release](https://github.com/NeilSeligmann/G15Manager/actions/workflows/release.yml/badge.svg)
 
+## Table of Contets
+- [G15Manager: An open source replacement to manage your Asus Zephyrus G15](#g15manager-an-open-source-replacement-to-manage-your-asus-zephyrus-g15)
+	- [Table of Contets](#table-of-contets)
+	- [Disclaimer](#disclaimer)
+	- [Current Status](#current-status)
+	- [Web UI](#web-ui)
+	- [Bug Report](#bug-report)
+	- [Requirements](#requirements)
+		- [Technical Notes](#technical-notes)
+	- [Install](#install)
+	- [Thermal Profiles](#thermal-profiles)
+	- [Changing the Fan Curves](#changing-the-fan-curves)
+	- [Change Refresh Rate](#change-refresh-rate)
+	- [Hotkeys](#hotkeys)
+	- [Battery Charge Limit](#battery-charge-limit)
+	- [How to Build](#how-to-build)
+	- [Developing](#developing)
+	- [References](#references)
+	- [Credits](#credits)
+
 ## Disclaimer
 
 Work in progress. This may void your warranty, proceed at your own risk.
@@ -119,6 +139,25 @@ To enable this feature, pass `-autoThermal` flag to enable it:
 ```
 .\G15Manager.exe -autoThermal
 ``` -->
+
+## Hotkeys
+|      Hotkey      |      Command      |
+| ---------------- | ----------------- |
+| `ROG Key`  |  Opens the Web UI       |
+| `Fn` + `F1`  |  Mute/Unmute Audio      |
+| `Fn` + `F2`  | Keyboard Brightness Down|
+| `Fn` + `F3`  |  Keyboard Brightness Up |
+| `Fn` + `F4`  |  Play/Pause Media       |
+| `Fn` + `F5`  |  Cycle Thermal Profiles |
+| `Fn` + `F6`  |  Screenshot             |
+| `Fn` + `F7`  |  Display Brightness Down|
+| `Fn` + `F8`  |  Display Brightness Up  |
+| `Fn` + `F9`  |  Display Mirror Settings|
+| `Fn` + `F10` | Enable/Disable Touchpad |
+| `Fn` + `F11` |  Sleep                  |
+| `Fn` + `F12` |  Toggle Refresh Rate    |
+| `Fn` + `C`   |  Disable Dedicated GPU  |
+| `Fn` + `V`   |  Enable Dedicated GPU   |
 
 ## Battery Charge Limit
 
